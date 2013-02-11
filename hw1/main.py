@@ -64,6 +64,21 @@ def validateInput(args):
       boostRounds = int(args_map['-b'])
     return [noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds]
 
+# Give a score for a tree on a dataset between 0 and 1
+def scoreTree(learner, dataset):
+
+    # retrive examples
+    examples = dataset.examples[:]
+
+    # keep track of the number it trains correctly
+    numCorrect = 0
+    for i in xrange(len(examples)):
+        if learner.predict(examples[i]) == examples[i].attrs[dataset.target]:
+            numCorrect = numCorrect + 1
+
+    return numCorrect / float(len(examples))
+
+
 def main():
     arguments = validateInput(sys.argv)
     noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds = arguments
@@ -91,6 +106,32 @@ def main():
     # ====================================
     # WRITE CODE FOR YOUR EXPERIMENTS HERE
     # ====================================
+
+    # =========================
+    # Ten-fold Cross-Validation
+    # =========================
+
+    # Divide data into 10 chunks
+    fold = 10
+
+    dataLength = len(examples)
+    chunkLength = dataLength/fold
+
+    # for each chunk, train on the remaining data and test on the chunk
+    runningAverage = 0
+    for i in range(fold):
+        learner = DecisionTreeLearner()
+        training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+        validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+        learner.train(training)
+        runningAverage += scoreTree(learner, validation)
+
+    # print the average score
+    print "The average cross-validation score is", (runningAverage / fold)
+
+    # =========================
+    # Validation Set Pruning
+    # =========================
 
 main()
 
