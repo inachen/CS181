@@ -310,10 +310,36 @@ class DecisionTreeLearner(Learner):
     def predict(self, example):
         return self.dt.predict(example)
 
-    def train(self, dataset):
+    def train(self, dataset, cutoff=None):
         self.dataset = dataset
         self.attrnames = dataset.attrnames
-        self.dt = self.decision_tree_learning(dataset.examples, dataset.inputs)
+        if cutoff is None:
+            self.dt = self.decision_tree_learning(dataset.examples, dataset.inputs)
+        else:
+            self.dt = self.short_tree_learning(dataset.examples, dataset.inputs, cutoff)
+
+    def short_tree_learning(self, examples, attrs, cutoff, default=None):
+        if len(examples) == 0:
+            return DecisionTree(DecisionTree.LEAF, classification=default)
+        elif self.all_same_class(examples):
+            return DecisionTree(DecisionTree.LEAF,
+                                classification=examples[0].attrs[self.dataset.target])
+        elif  len(attrs) == 0:
+            return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
+        else:
+            best = self.choose_attribute(attrs, examples)
+            tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
+            print cutoff
+            if cutoff <= 0:
+                for (v, examples_i) in self.split_by(best, examples):
+                    subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
+                    tree.add(v, subtree)
+                return tree
+            for (v, examples_i) in self.split_by(best, examples):
+                subtree = self.short_tree_learning(examples_i,
+                  removeall(best, attrs), cutoff-1, self.majority_value(examples))
+                tree.add(v, subtree)
+            return tree
 
     def decision_tree_learning(self, examples, attrs, default=None):
         if len(examples) == 0:
@@ -353,16 +379,24 @@ class DecisionTreeLearner(Learner):
 
     def count(self, attr, val, examples):
         return count_if(lambda e: e.attrs[attr] == val, examples)
+
+    def weightedcount(self, attr, val, examples):
+        count = 0.0
+        for e in examples:
+            if e.attrs[attr] == val:
+                count += e.weight
+        return count
     
     def information_gain(self, attr, examples):
         def I(examples):
             target = self.dataset.target
-            return information_content([self.count(target, v, examples)
+            return information_content([self.weightedcount(target, v, examples)
                                         for v in self.dataset.values[target]])
         N = float(len(examples))
         remainder = 0
         for (v, examples_i) in self.split_by(attr, examples):
-            remainder += (len(examples_i) / N) * I(examples_i)
+            # change the remainder for weighted data
+            remainder += sum([e.weight for e in examples_i])/sum([e.weight for e in examples]) * I(examples_i)
         return I(examples) - remainder
 
     def split_by(self, attr, examples=None):
@@ -380,4 +414,59 @@ def information_content(values):
     if s != 1.0: values = [v/s for v in values]
     return sum([- v * log2(v) for v in values])
 
+
+# =========================
+# Toy data for testing
+# =========================
+# example1 = Example([1,0,1,0,0])
+# example2 = Example([1,0,0,0,1])
+# example3 = Example([0,0,0,1,0])
+# example4 = Example([1,0,0,1,1])
+# example5 = Example([0,1,1,1,1])
+# example6 = Example([1,1,0,1,0])
+
+# examples1 = [example1,example2,example3,example4,example5,example6]
+
+# wexample1 = Example([1,0,1,0,0])
+# wexample1.weight = 0.5
+# wexample2 = Example([1,0,0,0,1])
+# wexample2.weight = 0.1
+# wexample3 = Example([0,0,0,1,0])
+# wexample3.weight = 0.0
+# wexample4 = Example([1,0,0,1,1])
+# wexample4.weight = 0.1
+# wexample5 = Example([0,1,1,1,1])
+# wexample5.weight = 0.2
+# wexample6 = Example([1,1,0,1,0])
+# wexample6.weight = 0.1
+
+# myexamples = [wexample1,wexample2,wexample3,wexample4,wexample5,wexample6]
+# mydataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+
+
+# learner = DecisionTreeLearner()
+# learner.dataset = mydataset
+# assert(abs(learner.information_gain(0, myexamples) - 0.3219) < 0.0001)
 #_________________________________________________
+
+wexample1 = Example([1,0,1,0,0])
+wexample1.weight = 0.5
+wexample2 = Example([1,0,0,0,1])
+wexample2.weight = 0.1
+wexample3 = Example([0,0,0,1,0])
+wexample3.weight = 0.0
+wexample4 = Example([1,0,0,1,1])
+wexample4.weight = 0.1
+wexample5 = Example([0,1,1,1,1])
+wexample5.weight = 0.2
+wexample6 = Example([1,1,0,1,0])
+wexample6.weight = 0.1
+
+mydataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+
+
+learner = DecisionTreeLearner()
+learner.train(mydataset, cutoff=2)
+learner.dataset = mydataset
+
+

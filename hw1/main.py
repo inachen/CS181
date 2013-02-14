@@ -71,46 +71,46 @@ def validateInput(args):
 # Toy data for testing
 # =========================
 example1 = Example([1,0,1,0,0])
-example2 = Example([1,0,0,0,0])
-example3 = Example([0,0,0,1,1])
+example2 = Example([1,0,0,0,1])
+example3 = Example([0,0,0,1,0])
 example4 = Example([1,0,0,1,1])
-example5 = Example([0,1,1,1,0])
-example6 = Example([0,0,0,1,1])
+example5 = Example([0,1,1,1,1])
+example6 = Example([1,1,0,1,0])
 
 # same examples, but with opposite labels
 xexample1 = Example([1,0,1,0,1])
-xexample2 = Example([1,0,0,0,1])
-xexample3 = Example([0,0,0,1,0])
+xexample2 = Example([1,0,0,0,0])
+xexample3 = Example([0,0,0,1,1])
 xexample4 = Example([1,0,0,1,0])
-xexample5 = Example([0,1,1,1,1])
-xexample6 = Example([0,0,0,1,0])
+xexample5 = Example([0,1,1,1,0])
+xexample6 = Example([1,1,0,1,1])
 
 # make some weighted data
 wexample1 = Example([1,0,1,0,0])
 wexample1.weight = 0.5
-wexample2 = Example([1,0,0,0,0])
+wexample2 = Example([1,0,0,0,1])
 wexample2.weight = 0.1
-wexample3 = Example([0,0,0,1,1])
+wexample3 = Example([0,0,0,1,0])
 wexample3.weight = 0.0
 wexample4 = Example([1,0,0,1,1])
 wexample4.weight = 0.1
-wexample5 = Example([0,1,1,1,0])
+wexample5 = Example([0,1,1,1,1])
 wexample5.weight = 0.2
-wexample6 = Example([0,0,0,1,1])
+wexample6 = Example([1,1,0,1,0])
 wexample6.weight = 0.1
 
 # same examples, but with opposite labels
 wxexample1 = Example([1,0,1,0,1])
 wxexample1.weight = 0.1
-wxexample2 = Example([1,0,0,0,1])
+wxexample2 = Example([1,0,0,0,0])
 wxexample2.weight = 0.2
-wxexample3 = Example([0,0,0,1,0])
+wxexample3 = Example([0,0,0,1,1])
 wxexample3.weight = 0.3
 wxexample4 = Example([1,0,0,1,0])
 wxexample4.weight = 0.2
-wxexample5 = Example([0,1,1,1,1])
+wxexample5 = Example([0,1,1,1,0])
 wxexample5.weight = 0.1
-wxexample6 = Example([0,0,0,1,0])
+wxexample6 = Example([1,1,0,1,1])
 wxexample6.weight = 0.1
 
 examples1 = [example1,example2,example3,example4,example5,example6]
@@ -176,13 +176,12 @@ def vote(trees, example):
 # halflearned = DecisionTreeLearner()
 # halflearned.train(halfdataset1)
 
-# #print vote([[learned,0],[xlearned,0.5]], example1)
 # assert(vote([[learned,0],[xlearned,0.5]], example1) == 1)
 # assert(vote([[learned,0],[xlearned,6]], example1) == 1)
 # assert(vote([[learned,0.5],[xlearned,0.5]], example1) == 0)
 # assert(vote([[learned,0.49],[xlearned,0.5]], example1) == 1)
 # assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example1) == 1)
-# assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example5) == 0)
+# assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example5) == 1)
 
 
 def weightHyp(learner, dataset):
@@ -221,33 +220,43 @@ def weightHyp(learner, dataset):
 
 def weightData(learner, dataset, alpha):
     "reweights the data based on how well the algorithm did on each data point"
-    for e in dataset.examples:
-        if learner.predict(e) != e.attrs[dataset.target]:
+    mydata = dataset
+    for e in mydata.examples:
+        if learner.predict(e) != e.attrs[mydata.target]:
             e.weight = e.weight * math.exp(alpha)
         else:
             e.weight = e.weight * math.exp((-1.0*alpha))
 
     # Normalize
-    s = sum([e.weight for e in dataset.examples])
-    for e in dataset.examples:
+    s = sum([e.weight for e in mydata.examples])
+    for e in mydata.examples:
         e.weight = e.weight / s
 
+
 # =========================
-# Testing for weightHyp
+# Testing for weightData
 # =========================
 
-whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
+# whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
 
-learned = DecisionTreeLearner()
-learned.train(wdataset)
+# learned = DecisionTreeLearner()
+# learned.train(wdataset)
 
-weightData(learned, whalfdataset, 1.5)
-assert(abs(wxexample1.weight - 0.1*math.exp(1.5)/2.778265506) < 0.00001)
-assert(abs(wxexample2.weight - 0.2*math.exp(1.5)/2.778265506) < 0.00001)
-assert(abs(wxexample3.weight - 0.3*math.exp(1.5)/2.778265506) < 0.00001)
-assert(abs(wexample4.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
-assert(abs(wexample5.weight - 0.2*math.exp(-1.5)/2.778265506) < 0.00001)
-assert(abs(wexample6.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
+# weightData(learned, whalfdataset, 1.5)
+# assert(abs(wxexample1.weight - 0.1*math.exp(1.5)/2.778265506) < 0.00001)
+# assert(abs(wxexample2.weight - 0.2*math.exp(1.5)/2.778265506) < 0.00001)
+# assert(abs(wxexample3.weight - 0.3*math.exp(1.5)/2.778265506) < 0.00001)
+# assert(abs(wexample4.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
+# assert(abs(wexample5.weight - 0.2*math.exp(-1.5)/2.778265506) < 0.00001)
+# assert(abs(wexample6.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
+
+def boosting(dataset,numrounds):
+    learners = []
+    mydata = dataset
+    for i in xrange(numrounds):
+        learner = DecisionTreeLearner()
+        learner.train(dataset)
+        alpha = weightHyp(learner,dataset)
 
 
 def main():
