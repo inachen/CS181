@@ -1,9 +1,12 @@
 # main.py
 # -------
-# YOUR NAME HERE
+# Kathy lin, Ina Chen
 
 from dtree import *
 import sys
+
+#import matplotlib.pyplot as plt
+#from pylab import *
 
 class Globals:
     noisyFlag = False
@@ -64,8 +67,34 @@ def validateInput(args):
       boostRounds = int(args_map['-b'])
     return [noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds]
 
-# Give a score for a tree on a dataset between 0 and 1
+# =========================
+# Toy data for testing
+# =========================
+example1 = Example([1,0,1,0,0])
+example2 = Example([1,0,0,0,0])
+example3 = Example([0,0,0,1,1])
+example4 = Example([1,0,0,1,1])
+example5 = Example([0,1,1,1,0])
+example6 = Example([0,0,0,1,1])
+
+# same examples, but with opposite labels
+xexample1 = Example([1,0,1,0,1])
+xexample2 = Example([1,0,0,0,1])
+xexample3 = Example([0,0,0,1,0])
+xexample4 = Example([1,0,0,1,0])
+xexample5 = Example([0,1,1,1,1])
+xexample6 = Example([0,0,0,1,0])
+
+examples1 = [example1,example2,example3,example4,example5,example6]
+xexamples1 = [xexample1,xexample2,xexample3,xexample4,xexample5,xexample6]
+halfexamples1 = [xexample1,xexample2,xexample3,example4,example5,example6]
+
+dataset1 = DataSet(examples1)
+xdataset1 = DataSet(xexamples1)
+halfdataset1 = DataSet(halfexamples1)
+
 def scoreTree(learner, dataset):
+    "Give a score for a tree on a dataset between 0 and 1"
 
     # retrive examples
     examples = dataset.examples[:]
@@ -77,6 +106,136 @@ def scoreTree(learner, dataset):
             numCorrect = numCorrect + 1
 
     return numCorrect / float(len(examples))
+
+# =========================
+# Testing for scoreTree
+# =========================
+# learned = DecisionTreeLearner()
+# learned.train(dataset1)
+# assert(scoreTree(learned, dataset1) == 1)
+# assert(scoreTree(learned, xdataset1) == 0)
+# assert(scoreTree(learned, halfdataset1) == 0.5)
+
+def vote(trees, example):
+    "Takes a list of tuples of trees and their weights. They vote on the dataset"
+
+    average = 0.0;
+
+    for i in xrange(len(trees)):
+        average += (trees[i][1])*(trees[i][0].predict(example))
+
+    average = average/sum(t[1] for t in trees)
+
+    if average > 0.5:
+        return 1
+    else:
+        return 0
+
+# =========================
+# Testing for vote
+# =========================
+# learned = DecisionTreeLearner()
+# learned.train(dataset1)
+
+# xlearned = DecisionTreeLearner()
+# xlearned.train(xdataset1)
+
+# halflearned = DecisionTreeLearner()
+# halflearned.train(halfdataset1)
+
+# #print vote([[learned,0],[xlearned,0.5]], example1)
+# assert(vote([[learned,0],[xlearned,0.5]], example1) == 1)
+# assert(vote([[learned,0],[xlearned,6]], example1) == 1)
+# assert(vote([[learned,0.5],[xlearned,0.5]], example1) == 0)
+# assert(vote([[learned,0.49],[xlearned,0.5]], example1) == 1)
+# assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example1) == 1)
+# assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example5) == 0)
+
+
+def weightHyp(learner, dataset):
+    "Finds the weight of a hypothesis"
+
+    # retrive examples
+    examples = dataset.examples[:]
+
+    # find the error
+    error = 0.0
+    for i in xrange(len(examples)):
+        if learner.predict(examples[i]) != examples[i].attrs[dataset.target]:
+            error = error + examples[i].weight
+        print "error", error
+        print examples[i].weight
+
+    if error == 0:
+        return sys.maxint
+
+    if error == 1:
+        return 0
+
+    else:
+        return 0.5 * math.log((1-error)/error)
+
+# =========================
+# Testing for weightHyp
+# =========================
+
+# make some weighted data
+wexample1 = Example([1,0,1,0,0])
+wexample1.weight = 0.5
+wexample2 = Example([1,0,0,0,0])
+wexample2.weight = 0.1
+wexample3 = Example([0,0,0,1,1])
+wexample3.weight = 0
+wexample4 = Example([1,0,0,1,1])
+wexample4.weight = 0.1
+wexample5 = Example([0,1,1,1,0])
+wexample5.weight = 0.2
+wexample6 = Example([0,0,0,1,1])
+wexample6.weight = 0.1
+
+wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+
+# same examples, but with opposite labels
+wxexample1 = Example([1,0,1,0,1])
+wxexample1.weight = 0.1
+wxexample2 = Example([1,0,0,0,1])
+wxexample2.weight = 0.2
+wxexample3 = Example([0,0,0,1,0])
+wxexample3.weight = 0.3
+wxexample4 = Example([1,0,0,1,0])
+wxexample4.weight = 0.2
+wxexample5 = Example([0,1,1,1,1])
+wxexample5.weight = 0.1
+wxexample6 = Example([0,0,0,1,0])
+wxexample6.weight = 0.1
+
+wxdataset = DataSet([wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6])
+
+whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
+
+learned = DecisionTreeLearner()
+learned.train(wdataset)
+
+halflearned = DecisionTreeLearner()
+halflearned.train(whalfdataset)
+
+assert(weightHyp(learned, wdataset) == sys.maxint)
+assert(weightHyp(learned, wxdataset) == 0)
+assert(weightHyp(halflearned, wdataset) == 0.4)
+assert(weightHyp(halflearned, wxdataset) == 0.6)
+
+def weightData(learner, dataset, alpha):
+    "reweights the data based on how well the algorithm did on each data point"
+    for e in dataset.examples:
+        if learner.predict(i) != e.attrs[dataset.target]:
+            e.weight = e.weight * math.exp(alpha)
+        else:
+            e.weight = e.weight * math.exp((-1.0*alpha))
+
+    # Normalize
+    s = sum([e.weight for e in dataset.examples])
+    for e in dataset.examples:
+        e.weight = e.weight / s
 
 
 def main():
@@ -132,6 +291,24 @@ def main():
     # =========================
     # Validation Set Pruning
     # =========================
+
+    if pruneFlag == True:
+        plt.clf()
+        xs = range(5)
+        ys = [3, 5, 1, 10, 8]
+        p1 = plt.plot(xs, ys, color='b')
+        plt.title('sample graph')
+        plt.xlabel('x-coordinate')
+        plt.ylabel('y-coordinate')
+        plt.axis([0, 4, 0, 12])
+        #prune()
+
+    # ========
+    # AdaBoost
+    # ========
+
+    #if boostRounds > 0 and maxDepth > 0:
+
 
 main()
 
