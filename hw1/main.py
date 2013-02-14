@@ -85,13 +85,46 @@ xexample4 = Example([1,0,0,1,0])
 xexample5 = Example([0,1,1,1,1])
 xexample6 = Example([0,0,0,1,0])
 
+# make some weighted data
+wexample1 = Example([1,0,1,0,0])
+wexample1.weight = 0.5
+wexample2 = Example([1,0,0,0,0])
+wexample2.weight = 0.1
+wexample3 = Example([0,0,0,1,1])
+wexample3.weight = 0.0
+wexample4 = Example([1,0,0,1,1])
+wexample4.weight = 0.1
+wexample5 = Example([0,1,1,1,0])
+wexample5.weight = 0.2
+wexample6 = Example([0,0,0,1,1])
+wexample6.weight = 0.1
+
+# same examples, but with opposite labels
+wxexample1 = Example([1,0,1,0,1])
+wxexample1.weight = 0.1
+wxexample2 = Example([1,0,0,0,1])
+wxexample2.weight = 0.2
+wxexample3 = Example([0,0,0,1,0])
+wxexample3.weight = 0.3
+wxexample4 = Example([1,0,0,1,0])
+wxexample4.weight = 0.2
+wxexample5 = Example([0,1,1,1,1])
+wxexample5.weight = 0.1
+wxexample6 = Example([0,0,0,1,0])
+wxexample6.weight = 0.1
+
 examples1 = [example1,example2,example3,example4,example5,example6]
 xexamples1 = [xexample1,xexample2,xexample3,xexample4,xexample5,xexample6]
 halfexamples1 = [xexample1,xexample2,xexample3,example4,example5,example6]
+wexamples = [wexample1,wexample2,wexample3,wexample4,wexample5,wexample6]
+wxexamples = [wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6]
+
 
 dataset1 = DataSet(examples1)
 xdataset1 = DataSet(xexamples1)
 halfdataset1 = DataSet(halfexamples1)
+wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+wxdataset = DataSet([wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6])
 
 def scoreTree(learner, dataset):
     "Give a score for a tree on a dataset between 0 and 1"
@@ -163,8 +196,6 @@ def weightHyp(learner, dataset):
     for i in xrange(len(examples)):
         if learner.predict(examples[i]) != examples[i].attrs[dataset.target]:
             error = error + examples[i].weight
-        print "error", error
-        print examples[i].weight
 
     if error == 0:
         return sys.maxint
@@ -179,55 +210,19 @@ def weightHyp(learner, dataset):
 # Testing for weightHyp
 # =========================
 
-# make some weighted data
-wexample1 = Example([1,0,1,0,0])
-wexample1.weight = 0.5
-wexample2 = Example([1,0,0,0,0])
-wexample2.weight = 0.1
-wexample3 = Example([0,0,0,1,1])
-wexample3.weight = 0
-wexample4 = Example([1,0,0,1,1])
-wexample4.weight = 0.1
-wexample5 = Example([0,1,1,1,0])
-wexample5.weight = 0.2
-wexample6 = Example([0,0,0,1,1])
-wexample6.weight = 0.1
+# whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
 
-wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+# learned = DecisionTreeLearner()
+# learned.train(wdataset)
 
-# same examples, but with opposite labels
-wxexample1 = Example([1,0,1,0,1])
-wxexample1.weight = 0.1
-wxexample2 = Example([1,0,0,0,1])
-wxexample2.weight = 0.2
-wxexample3 = Example([0,0,0,1,0])
-wxexample3.weight = 0.3
-wxexample4 = Example([1,0,0,1,0])
-wxexample4.weight = 0.2
-wxexample5 = Example([0,1,1,1,1])
-wxexample5.weight = 0.1
-wxexample6 = Example([0,0,0,1,0])
-wxexample6.weight = 0.1
-
-wxdataset = DataSet([wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6])
-
-whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
-
-learned = DecisionTreeLearner()
-learned.train(wdataset)
-
-halflearned = DecisionTreeLearner()
-halflearned.train(whalfdataset)
-
-assert(weightHyp(learned, wdataset) == sys.maxint)
-assert(weightHyp(learned, wxdataset) == 0)
-assert(weightHyp(halflearned, wdataset) == 0.4)
-assert(weightHyp(halflearned, wxdataset) == 0.6)
+# assert(weightHyp(learned, wdataset) == sys.maxint)
+# assert(weightHyp(learned, wxdataset) == 0)
+# assert(abs(weightHyp(learned, whalfdataset) - 0.5 * math.log((0.4)/0.6)) < 0.0001)
 
 def weightData(learner, dataset, alpha):
     "reweights the data based on how well the algorithm did on each data point"
     for e in dataset.examples:
-        if learner.predict(i) != e.attrs[dataset.target]:
+        if learner.predict(e) != e.attrs[dataset.target]:
             e.weight = e.weight * math.exp(alpha)
         else:
             e.weight = e.weight * math.exp((-1.0*alpha))
@@ -236,6 +231,23 @@ def weightData(learner, dataset, alpha):
     s = sum([e.weight for e in dataset.examples])
     for e in dataset.examples:
         e.weight = e.weight / s
+
+# =========================
+# Testing for weightHyp
+# =========================
+
+whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
+
+learned = DecisionTreeLearner()
+learned.train(wdataset)
+
+weightData(learned, whalfdataset, 1.5)
+assert(abs(wxexample1.weight - 0.1*math.exp(1.5)/2.778265506) < 0.00001)
+assert(abs(wxexample2.weight - 0.2*math.exp(1.5)/2.778265506) < 0.00001)
+assert(abs(wxexample3.weight - 0.3*math.exp(1.5)/2.778265506) < 0.00001)
+assert(abs(wexample4.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
+assert(abs(wexample5.weight - 0.2*math.exp(-1.5)/2.778265506) < 0.00001)
+assert(abs(wexample6.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
 
 
 def main():
