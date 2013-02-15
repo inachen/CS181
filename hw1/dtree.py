@@ -277,6 +277,17 @@ class DecisionTree:
         child = self.branches[example.attrs[self.attr]]
         return child.predict(example)
 
+    def countTree(self,num):
+        "counts how deep a tree is"
+        if self.nodetype == DecisionTree.LEAF:
+            return num
+        else:
+            kids = []
+            for i in self.branches:
+                br = self.branches[i]
+                kids.append(br.countTree(0))
+        return 1 + max(kids)
+
     def add(self, val, subtree):
         "Add a branch.  If self.attr = val, go to the given subtree."
         self.branches[val] = subtree
@@ -329,7 +340,7 @@ class DecisionTreeLearner(Learner):
         else:
             best = self.choose_attribute(attrs, examples)
             tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
-            if cutoff <= 0:
+            if cutoff <= 1:
                 for (v, examples_i) in self.split_by(best, examples):
                     subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
                     tree.add(v, subtree)
@@ -404,6 +415,9 @@ class DecisionTreeLearner(Learner):
             examples = self.dataset.examples
         return [(v, [e for e in examples if e.attrs[attr] == v])
                 for v in self.dataset.values[attr]]
+
+    def countTree(self):
+        return self.dt.countTree(0)
     
 def information_content(values):
     "Number of bits to represent the probability distribution in values."
@@ -412,7 +426,6 @@ def information_content(values):
     s = float(sum(values))
     if s != 1.0: values = [v/s for v in values]
     return sum([- v * log2(v) for v in values])
-
 
 # =========================
 # Toy data for testing
