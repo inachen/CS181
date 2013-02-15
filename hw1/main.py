@@ -317,6 +317,35 @@ def splitData(dataset,size):
 # assert(len(v3) == 5)
 # print [e.attrs for e in t2], [f.attrs for f in v2]
 
+#def findEndNodes (tree):
+#  "returns list of end nodes (nodes with only leaves attached) "
+
+
+
+def prune (pLearner, origLearner, validation):
+  nodelist = []
+  classlist = []
+  for a, c in pLearner.dt.branches.iteritems():
+    nodelist.append(c.nodetype)
+    if c.nodetype == DecisionTree.LEAF:
+      classlist.append(c.classification)
+  print len(nodelist)
+  if every(lambda x: x == DecisionTree.LEAF, nodelist):
+    hold = copy.deepcopy(pLearner)
+    pLearner.dt.nodeType = DecisionTree.LEAF
+    pLeanrer.dt.classification = mode(classlist)
+    if scoreTree(pLearner, validation) > scoreTree(origLearner, validation):
+      return pLearner.dt
+    else:
+      return hold.dt
+  else:
+    for a, c in pLearner.dt.branches.iteritems():
+      if c.nodetype == DecisionTree.NODE:
+        pLearner.dt = c
+        pLearner.dt = prune(pLearner, origLearner, validation)
+
+
+
 def main():
     arguments = validateInput(sys.argv)
     noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds = arguments
@@ -345,7 +374,7 @@ def main():
       dataset.num_rounds = boostRounds
 
     # ====================================
-    # WRITE CODE FOR YOUR EXPERIMENTS HERE
+    # WRITE CODE YOUR EXPERIMENTS HERE
     # ====================================
 
     # =========================
@@ -365,6 +394,12 @@ def main():
         training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
         validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
         learner.train(training)
+
+        # make pruning tree
+        pruneLearner = copy.deepcopy(learner)
+
+#        prune(pruneLearner, learner)
+
         runningAverage += scoreTree(learner, validation)
 
     # print the average score
@@ -375,6 +410,7 @@ def main():
     # =========================
 
     if pruneFlag == True:
+
         plt.clf()
         xs = range(5)
         ys = [3, 5, 1, 10, 8]
