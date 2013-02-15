@@ -250,14 +250,53 @@ def weightData(learner, dataset, alpha):
 # assert(abs(wexample5.weight - 0.2*math.exp(-1.5)/2.778265506) < 0.00001)
 # assert(abs(wexample6.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
 
-def boosting(dataset,numrounds):
+def boosting(dataset,numrounds,maxdepth):
     learners = []
     mydata = dataset
     for i in xrange(numrounds):
         learner = DecisionTreeLearner()
-        learner.train(dataset)
+        learner.train(dataset,cutoff=maxdepth)
         alpha = weightHyp(learner,dataset)
+        weightData(learner,mydata,alpha)
+        learners.append([learner,alpha])
+    return learners
 
+def splitData(dataset,size):
+    training = dataset.examples
+    if size >= len(training):
+        print "hi"
+        return [None,dataset]
+    if size <= 0:
+        print "hii"
+        return [dataset,None]
+    validation = []
+    for i in xrange(size):
+        num = random.randint(0,len(training)-1)
+        validation.append(training[num])
+        del training[num]
+    #train = DataSet(training)
+    #validate = DataSet(validation)
+    #return [train,validate]
+    return [DataSet(training,values=dataset.values),DataSet(validation,values=dataset.values)]
+
+# =========================
+# Testing for splitData
+# =========================
+
+splits1 = splitData(dataset1,1)
+t1 = splits1[0].examples
+v1 = splits1[1].examples
+print "1", len(dataset1.examples)
+splits2 = splitData(dataset1,3)
+t2 = splits2[0].examples
+v2 = splits2[1].examples
+print "2", len(dataset1.examples)
+splits3 = splitData(dataset1,3)
+t3 = splits3[0].examples
+v3 = splits3[1].examples
+print "3", len(dataset1.examples)
+
+assert(len(t1) == 5)
 
 def main():
     arguments = validateInput(sys.argv)
@@ -273,6 +312,9 @@ def main():
 
     data = parse_csv(f.read(), " ")
     dataset = DataSet(data)
+
+    a = splitData(dataset,10)
+    #print len(a[1].examples)
     
     # Copy the dataset so we have two copies of it
     examples = dataset.examples[:]
@@ -328,7 +370,10 @@ def main():
     # AdaBoost
     # ========
 
-    #if boostRounds > 0 and maxDepth > 0:
+    if boostRounds > 0 and maxDepth > 0:
+        
+
+        learners = boosting(dataset, boostRounds)
 
 
 main()
