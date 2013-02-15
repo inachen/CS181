@@ -67,65 +67,6 @@ def validateInput(args):
       boostRounds = int(args_map['-b'])
     return [noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds]
 
-# =========================
-# Toy data for testing
-# =========================
-example1 = Example([1,0,1,0,0])
-example2 = Example([1,0,0,0,1])
-example3 = Example([0,0,0,1,0])
-example4 = Example([1,0,0,1,1])
-example5 = Example([0,1,1,1,1])
-example6 = Example([1,1,0,1,0])
-
-# same examples, but with opposite labels
-xexample1 = Example([1,0,1,0,1])
-xexample2 = Example([1,0,0,0,0])
-xexample3 = Example([0,0,0,1,1])
-xexample4 = Example([1,0,0,1,0])
-xexample5 = Example([0,1,1,1,0])
-xexample6 = Example([1,1,0,1,1])
-
-# make some weighted data
-wexample1 = Example([1,0,1,0,0])
-wexample1.weight = 0.5
-wexample2 = Example([1,0,0,0,1])
-wexample2.weight = 0.1
-wexample3 = Example([0,0,0,1,0])
-wexample3.weight = 0.0
-wexample4 = Example([1,0,0,1,1])
-wexample4.weight = 0.1
-wexample5 = Example([0,1,1,1,1])
-wexample5.weight = 0.2
-wexample6 = Example([1,1,0,1,0])
-wexample6.weight = 0.1
-
-# same examples, but with opposite labels
-wxexample1 = Example([1,0,1,0,1])
-wxexample1.weight = 0.1
-wxexample2 = Example([1,0,0,0,0])
-wxexample2.weight = 0.2
-wxexample3 = Example([0,0,0,1,1])
-wxexample3.weight = 0.3
-wxexample4 = Example([1,0,0,1,0])
-wxexample4.weight = 0.2
-wxexample5 = Example([0,1,1,1,0])
-wxexample5.weight = 0.1
-wxexample6 = Example([1,1,0,1,1])
-wxexample6.weight = 0.1
-
-examples1 = [example1,example2,example3,example4,example5,example6]
-xexamples1 = [xexample1,xexample2,xexample3,xexample4,xexample5,xexample6]
-halfexamples1 = [xexample1,xexample2,xexample3,example4,example5,example6]
-wexamples = [wexample1,wexample2,wexample3,wexample4,wexample5,wexample6]
-wxexamples = [wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6]
-
-
-dataset1 = DataSet(examples1)
-xdataset1 = DataSet(xexamples1)
-halfdataset1 = DataSet(halfexamples1)
-wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
-wxdataset = DataSet([wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6])
-
 def scoreTree(learner, dataset):
     "Give a score for a tree on a dataset between 0 and 1"
 
@@ -140,15 +81,6 @@ def scoreTree(learner, dataset):
 
     return numCorrect / float(len(examples))
 
-# =========================
-# Testing for scoreTree
-# =========================
-# learned = DecisionTreeLearner()
-# learned.train(dataset1)
-# assert(scoreTree(learned, dataset1) == 1)
-# assert(scoreTree(learned, xdataset1) == 0)
-# assert(scoreTree(learned, halfdataset1) == 0.5)
-
 
 def vote(trees, example):
     "Takes a list of tuples of trees and their weights. They vote on the dataset"
@@ -158,32 +90,13 @@ def vote(trees, example):
     for i in xrange(len(trees)):
         average += (trees[i][1])*(trees[i][0].predict(example))
 
+    #print "sum", sum(t[1] for t in trees)
     average = average/sum(t[1] for t in trees)
 
     if average > 0.5:
         return 1
     else:
         return 0
-
-# =========================
-# Testing for vote
-# =========================
-# learned = DecisionTreeLearner()
-# learned.train(dataset1)
-
-# xlearned = DecisionTreeLearner()
-# xlearned.train(xdataset1)
-
-# halflearned = DecisionTreeLearner()
-# halflearned.train(halfdataset1)
-
-# assert(vote([[learned,0],[xlearned,0.5]], example1) == 1)
-# assert(vote([[learned,0],[xlearned,6]], example1) == 1)
-# assert(vote([[learned,0.5],[xlearned,0.5]], example1) == 0)
-# assert(vote([[learned,0.49],[xlearned,0.5]], example1) == 1)
-# assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example1) == 1)
-# assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example5) == 1)
-
 
 def scoreWeakTrees(learners,dataset):
     "Score a set of weak learners"
@@ -194,12 +107,13 @@ def scoreWeakTrees(learners,dataset):
     # keep track of the number they train correctly
     numCorrect = 0
     for i in xrange(len(examples)):
+        #print examples[i].attrs
         if vote(learners, examples[i]) == examples[i].attrs[dataset.target]:
             numCorrect = numCorrect + 1
+            #print "correct!"
+            #print numCorrect
 
     return numCorrect / float(len(examples))
-
-
 
 def weightHyp(learner, dataset):
     "Finds the weight of a hypothesis"
@@ -210,8 +124,14 @@ def weightHyp(learner, dataset):
     # find the error
     error = 0.0
     for i in xrange(len(examples)):
+        #print learner.predict(examples[i])
+        #print examples[i].attrs[dataset.target]
         if learner.predict(examples[i]) != examples[i].attrs[dataset.target]:
+            #print "wrong"
             error = error + examples[i].weight
+            #print error
+        # else:
+        #     print i
 
     if error == 0:
         return sys.maxint
@@ -222,21 +142,9 @@ def weightHyp(learner, dataset):
     else:
         return 0.5 * math.log((1-error)/error)
 
-# =========================
-# Testing for weightHyp
-# =========================
-
-# whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
-
-# learned = DecisionTreeLearner()
-# learned.train(wdataset)
-
-# assert(weightHyp(learned, wdataset) == sys.maxint)
-# assert(weightHyp(learned, wxdataset) == 0)
-# assert(abs(weightHyp(learned, whalfdataset) - 0.5 * math.log((0.4)/0.6)) < 0.0001)
-
 def weightData(learner, dataset, alpha):
     "reweights the data based on how well the algorithm did on each data point"
+    #print alpha
     mydata = dataset
     for e in mydata.examples:
         if learner.predict(e) != e.attrs[mydata.target]:
@@ -245,36 +153,60 @@ def weightData(learner, dataset, alpha):
             e.weight = e.weight * math.exp((-1.0*alpha))
 
     # Normalize
-    s = sum([e.weight for e in mydata.examples])
+    s = float(sum([e.weight for e in mydata.examples]))
+    #print [e.weight for e in mydata.examples]
     for e in mydata.examples:
         e.weight = e.weight / s
 
+# wexample1 = Example([1,0,1,0,0])
+# wexample1.weight = 0.5
+# wexample2 = Example([1,0,0,0,1])
+# wexample2.weight = 0.1
+# wexample3 = Example([0,0,0,1,0])
+# wexample3.weight = 0.0
+# wexample4 = Example([1,0,0,1,1])
+# wexample4.weight = 0.1
+# wexample5 = Example([0,1,1,1,1])
+# wexample5.weight = 0.2
+# wexample6 = Example([1,1,0,1,0])
+# wexample6.weight = 0.1
 
-# =========================
-# Testing for weightData
-# =========================
+# wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+
+# wxexample1 = Example([1,0,1,0,1])
+# wxexample1.weight = 0.1
+# wxexample2 = Example([1,0,0,0,0])
+# wxexample2.weight = 0.2
+# wxexample3 = Example([0,0,0,1,1])
+# wxexample3.weight = 0.3
+# wxexample4 = Example([1,0,0,1,0])
+# wxexample4.weight = 0.2
+# wxexample5 = Example([0,1,1,1,0])
+# wxexample5.weight = 0.1
+# wxexample6 = Example([1,1,0,1,1])
+# wxexample6.weight = 0.1
 
 # whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
 
 # learned = DecisionTreeLearner()
 # learned.train(wdataset)
-
-# weightData(learned, whalfdataset, 1.5)
-# assert(abs(wxexample1.weight - 0.1*math.exp(1.5)/2.778265506) < 0.00001)
-# assert(abs(wxexample2.weight - 0.2*math.exp(1.5)/2.778265506) < 0.00001)
-# assert(abs(wxexample3.weight - 0.3*math.exp(1.5)/2.778265506) < 0.00001)
-# assert(abs(wexample4.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
-# assert(abs(wexample5.weight - 0.2*math.exp(-1.5)/2.778265506) < 0.00001)
-# assert(abs(wexample6.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
+# weightData(learned,whalfdataset,2)
+# print [e.weight for e in whalfdataset.examples]
 
 def boosting(dataset,numrounds,maxdepth):
     learners = []
     mydata = dataset
-    for i in xrange(numrounds):
+    for i in xrange(numrounds-1):
         learner = DecisionTreeLearner()
-        learner.train(dataset,cutoff=maxdepth)
-        alpha = weightHyp(learner,dataset)
+        learner.train(mydata,cutoff=maxdepth)
+        print learner.dt
+        alpha = weightHyp(learner,mydata)
+        print "alpha", alpha
+        if alpha == sys.maxint:
+            return [[learner,1]]
         weightData(learner,mydata,alpha)
+        #print [e.weight for e in mydata.examples]
+        print "score", scoreTree(learner,mydata)
         learners.append([learner,alpha])
     return learners
 
@@ -345,7 +277,6 @@ def prune (pLearner, origLearner, validation):
         pLearner.dt = prune(pLearner, origLearner, validation)
 
 
-
 def main():
     arguments = validateInput(sys.argv)
     noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds = arguments
@@ -360,9 +291,6 @@ def main():
 
     data = parse_csv(f.read(), " ")
     dataset = DataSet(data)
-
-    a = splitData(dataset,10)
-    #print len(a[1].examples)
     
     # Copy the dataset so we have two copies of it
     examples = dataset.examples[:]
@@ -421,19 +349,43 @@ def main():
         plt.axis([0, 4, 0, 12])
         #prune()
 
+
     # ========
     # AdaBoost
     # ========
+    
 
     if boostRounds > 0 and maxDepth > 0:
-        
-        # split data into training and validation randomly
-        split = splitData(dataset,(len(dataset.examples))/10)
-        training = split[0]
-        validation = split[1]
 
-        # get all the weak learners
-        learners = boosting(training, boostRounds, maxDepth)
+        if valSetSize >= len(examples):
+            print "Please make sure your validation set size is smaller than your data set"
+
+        else:
+            # weight the data so that they all add to one
+            for e in examples:
+                e.weight = 1.0/len(examples)
+
+            dataset2 = DataSet(examples)
+            dataset2.examples.extend(examples)
+
+            # split data into training and validation randomly
+            # split = splitData(dataset2,valSetSize)
+            # training = split[0]
+            # validation = split[1]
+
+            runningAverage = 0
+            for i in range(fold):
+                learner = DecisionTreeLearner()
+                training = DataSet(dataset2.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset2.values)
+                validation = DataSet(dataset2.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+                # get all the weak learners
+                learners = boosting(training, boostRounds, maxDepth)
+                runningAverage += scoreWeakTrees(learners, validation)
+
+            # # get all the weak learners
+            # learners = boosting(training, boostRounds, maxDepth)
+
+            print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/fold
 
 
 
