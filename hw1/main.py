@@ -129,7 +129,7 @@ wxdataset = DataSet([wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxex
 def scoreTree(learner, dataset):
     "Give a score for a tree on a dataset between 0 and 1"
 
-    # retrive examples
+    # retrieve examples
     examples = dataset.examples[:]
 
     # keep track of the number it trains correctly
@@ -148,6 +148,7 @@ def scoreTree(learner, dataset):
 # assert(scoreTree(learned, dataset1) == 1)
 # assert(scoreTree(learned, xdataset1) == 0)
 # assert(scoreTree(learned, halfdataset1) == 0.5)
+
 
 def vote(trees, example):
     "Takes a list of tuples of trees and their weights. They vote on the dataset"
@@ -182,6 +183,22 @@ def vote(trees, example):
 # assert(vote([[learned,0.49],[xlearned,0.5]], example1) == 1)
 # assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example1) == 1)
 # assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example5) == 1)
+
+
+def scoreWeakTrees(learners,dataset):
+    "Score a set of weak learners"
+
+    # retrieve examples
+    examples = dataset.examples
+
+    # keep track of the number they train correctly
+    numCorrect = 0
+    for i in xrange(len(examples)):
+        if vote(learners, examples[i]) == examples[i].attrs[dataset.target]:
+            numCorrect = numCorrect + 1
+
+    return numCorrect / float(len(examples))
+
 
 
 def weightHyp(learner, dataset):
@@ -264,39 +281,41 @@ def boosting(dataset,numrounds,maxdepth):
 def splitData(dataset,size):
     training = dataset.examples
     if size >= len(training):
-        print "hi"
         return [None,dataset]
     if size <= 0:
-        print "hii"
         return [dataset,None]
     validation = []
     for i in xrange(size):
         num = random.randint(0,len(training)-1)
         validation.append(training[num])
         del training[num]
-    #train = DataSet(training)
-    #validate = DataSet(validation)
-    #return [train,validate]
     return [DataSet(training,values=dataset.values),DataSet(validation,values=dataset.values)]
 
 # =========================
 # Testing for splitData
 # =========================
 
-splits1 = splitData(dataset1,1)
-t1 = splits1[0].examples
-v1 = splits1[1].examples
-print "1", len(dataset1.examples)
-splits2 = splitData(dataset1,3)
-t2 = splits2[0].examples
-v2 = splits2[1].examples
-print "2", len(dataset1.examples)
-splits3 = splitData(dataset1,3)
-t3 = splits3[0].examples
-v3 = splits3[1].examples
-print "3", len(dataset1.examples)
+# dataset2 = copy.deepcopy(dataset1)
+# dataset3 = copy.deepcopy(dataset1)
+# dataset4 = copy.deepcopy(dataset1)
 
-assert(len(t1) == 5)
+# splits1 = splitData(dataset2,1)
+# t1 = splits1[0].examples
+# v1 = splits1[1].examples
+# splits2 = splitData(dataset3,3)
+# t2 = splits2[0].examples
+# v2 = splits2[1].examples
+# splits3 = splitData(dataset4,5)
+# t3 = splits3[0].examples
+# v3 = splits3[1].examples
+
+# assert(len(t1) == 5)
+# assert(len(v1) == 1)
+# assert(len(t2) == 3)
+# assert(len(v2) == 3)
+# assert(len(t3) == 1)
+# assert(len(v3) == 5)
+# print [e.attrs for e in t2], [f.attrs for f in v2]
 
 def main():
     arguments = validateInput(sys.argv)
@@ -372,8 +391,16 @@ def main():
 
     if boostRounds > 0 and maxDepth > 0:
         
+        # split data into training and validation randomly
+        split = splitData(dataset,(len(dataset.examples))/10)
+        training = split[0]
+        validation = split[1]
 
-        learners = boosting(dataset, boostRounds)
+        # get all the weak learners
+        learners = boosting(training, boostRounds, maxDepth)
+
+
+
 
 
 main()

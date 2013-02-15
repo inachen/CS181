@@ -329,7 +329,6 @@ class DecisionTreeLearner(Learner):
         else:
             best = self.choose_attribute(attrs, examples)
             tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
-            print cutoff
             if cutoff <= 0:
                 for (v, examples_i) in self.split_by(best, examples):
                     subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
