@@ -319,7 +319,6 @@ def main():
     # dataLength = len(examples)
     # chunkLength = dataLength/fold
 
-<<<<<<< HEAD
     # for each chunk, train on the remaining data and test on the chunk
     runningAverage = 0
     for i in range(fold):
@@ -334,7 +333,7 @@ def main():
 #        prune(pruneLearner, learner)
 
         runningAverage += scoreTree(learner, validation)
-=======
+
     # # for each chunk, train on the remaining data and test on the chunk
     # runningAverage = 0
     # for i in range(fold):
@@ -343,7 +342,6 @@ def main():
     #     validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
     #     learner.train(training)
     #     runningAverage += scoreTree(learner, validation)
->>>>>>> fixed bug in decision tree learner
 
     # # print the average score
     # print "The average cross-validation score is", (runningAverage / fold)
