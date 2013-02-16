@@ -335,21 +335,43 @@ class DecisionTreeLearner(Learner):
         elif self.all_same_class(examples):
             return DecisionTree(DecisionTree.LEAF,
                                 classification=examples[0].attrs[self.dataset.target])
-        elif  len(attrs) == 0:
+        elif  len(attrs) == 0 or cutoff == 1:
             return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
         else:
             best = self.choose_attribute(attrs, examples)
             tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
-            if cutoff <= 1:
-                for (v, examples_i) in self.split_by(best, examples):
-                    subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
-                    tree.add(v, subtree)
-                return tree
+            # if cutoff <= 1:
+            #     for (v, examples_i) in self.split_by(best, examples):
+            #         subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
+            #         tree.add(v, subtree)
+            #     return tree
             for (v, examples_i) in self.split_by(best, examples):
                 subtree = self.short_tree_learning(examples_i,
                   removeall(best, attrs), cutoff-1, self.majority_value(examples))
                 tree.add(v, subtree)
             return tree
+
+    # def short_tree_learning(self, examples, attrs, cutoff, default=None):
+    #     if len(examples) == 0:
+    #         return DecisionTree(DecisionTree.LEAF, classification=default)
+    #     elif self.all_same_class(examples):
+    #         return DecisionTree(DecisionTree.LEAF,
+    #                             classification=examples[0].attrs[self.dataset.target])
+    #     elif  len(attrs) == 0:
+    #         return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
+    #     else:
+    #         best = self.choose_attribute(attrs, examples)
+    #         tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
+    #         if cutoff <= 1:
+    #             for (v, examples_i) in self.split_by(best, examples):
+    #                 subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
+    #                 tree.add(v, subtree)
+    #             return tree
+    #         for (v, examples_i) in self.split_by(best, examples):
+    #             subtree = self.short_tree_learning(examples_i,
+    #               removeall(best, attrs), cutoff-1, self.majority_value(examples))
+    #             tree.add(v, subtree)
+    #         return tree
 
     def decision_tree_learning(self, examples, attrs, default=None):
         if len(examples) == 0:
@@ -361,6 +383,7 @@ class DecisionTreeLearner(Learner):
             return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
         else:
             best = self.choose_attribute(attrs, examples)
+            print "best", best
             tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
             for (v, examples_i) in self.split_by(best, examples):
                 subtree = self.decision_tree_learning(examples_i,
@@ -370,6 +393,9 @@ class DecisionTreeLearner(Learner):
 
     def choose_attribute(self, attrs, examples):
         "Choose the attribute with the highest information gain."
+        for a in xrange(len(attrs)):
+            print a, self.information_gain(attrs[a], examples)
+        #print attrs, lambda a: self.information_gain(a, examples)
         return argmax(attrs, lambda a: self.information_gain(a, examples))
 
     def all_same_class(self, examples):
@@ -406,7 +432,8 @@ class DecisionTreeLearner(Learner):
         remainder = 0
         for (v, examples_i) in self.split_by(attr, examples):
             # change the remainder for weighted data
-            remainder += sum([e.weight for e in examples_i])/sum([e.weight for e in examples]) * I(examples_i)
+            remainder += (len(examples_i) / N) * I(examples_i)
+            #remainder += sum([e.weight for e in examples_i]) * I(examples_i)
         return I(examples) - remainder
 
     def split_by(self, attr, examples=None):
