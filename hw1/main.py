@@ -417,6 +417,10 @@ def main():
             print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/valSetSize
             # print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",scoreWeakTrees(learners, validation)
 
+    # =========================================================================
+    # Graphing Boosting for a range of round-sizes for noisy and non-noisy data
+    # Uncomment to run
+    # =========================================================================
 
     # # run for 1 through 30 rounds with maxDepth = 1
     # # do for both noisy and non-noisy data
@@ -492,54 +496,58 @@ def main():
     # plt.show() # show the figure
 
 
-    # run for rounds 1 through 15 on non-noisy data 
-    # get both training and test data
+    # =======================================================================
+    # Graphing Boosting for a range of round-sizes for test and training data
+    # Uncomment to run
+    # =======================================================================
 
-    rounds = 15
+    # # run for rounds 1 through 15 on non-noisy data 
+    # # get both training and test data
+    # rounds = 15
 
-    resultstest = []
-    resultstraining = []
+    # resultstest = []
+    # resultstraining = []
 
-    # weight the data so that they all add to one
-    myexamples = copy.deepcopy(examples)
-    # weight the data so that they all add to one
-    for e in myexamples:
-        e.weight = 1.0/len(myexamples)
+    # # weight the data so that they all add to one
+    # myexamples = copy.deepcopy(examples)
+    # # weight the data so that they all add to one
+    # for e in myexamples:
+    #     e.weight = 1.0/len(myexamples)
 
-    dataset1 = DataSet(myexamples)
-    dataset1.examples.extend(myexamples)
+    # dataset1 = DataSet(myexamples)
+    # dataset1.examples.extend(myexamples)
 
-    # keep track of the score for each validation 
-    for roundnum in range(1,rounds + 1):
-        testaverage = 0
-        trainingaverage = 0
-        for i in range(valSetSize):
-            learner = DecisionTreeLearner()
-            training = DataSet(dataset1.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset1.values)
-            validation = DataSet(dataset1.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
-            # get all the weak learners
-            learners = boosting(training, roundnum, 1)
-            testaverage += scoreWeakTrees(learners, validation)
-            trainingaverage += scoreWeakTrees(learners, training)
+    # # keep track of the score for each validation 
+    # for roundnum in range(1,rounds + 1):
+    #     testaverage = 0
+    #     trainingaverage = 0
+    #     for i in range(valSetSize):
+    #         learner = DecisionTreeLearner()
+    #         training = DataSet(dataset1.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset1.values)
+    #         validation = DataSet(dataset1.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+    #         # get all the weak learners
+    #         learners = boosting(training, roundnum, 1)
+    #         testaverage += scoreWeakTrees(learners, validation)
+    #         trainingaverage += scoreWeakTrees(learners, training)
 
-        resultstest.append(testaverage/valSetSize)
-        resultstraining.append(trainingaverage/valSetSize)
+    #     resultstest.append(testaverage/valSetSize)
+    #     resultstraining.append(trainingaverage/valSetSize)
 
-    # plot 
-    plt.clf()
-    xs = range(1,rounds + 1)
-    ys = resultstest
-    ys2 = resultstraining
-    p1, = plt.plot(xs, ys, color='b')
-    p2, = plt.plot(xs, ys2, color='r')
-    plt.title('Cross-validated performance vs. number of boosting rounds')
-    plt.xlabel('Number of Boosting Rounds')
-    plt.ylabel('Performance')
-    plt.axis([0, rounds+2, 0.77, 1])
+    # # plot 
+    # plt.clf()
+    # xs = range(1,rounds + 1)
+    # ys = resultstest
+    # ys2 = resultstraining
+    # p1, = plt.plot(xs, ys, color='b')
+    # p2, = plt.plot(xs, ys2, color='r')
+    # plt.title('Cross-validated performance vs. number of boosting rounds')
+    # plt.xlabel('Number of Boosting Rounds')
+    # plt.ylabel('Performance')
+    # plt.axis([0, rounds+2, 0.77, 1])
 
-    plt.legend([p1,p2], ['test performance','training performance'], 'lower right')
-    savefig('figure2.jpg') # save the figure to a file
-    plt.show() # show the figure
+    # plt.legend([p1,p2], ['test performance','training performance'], 'lower right')
+    # savefig('figure2.jpg') # save the figure to a file
+    # plt.show() # show the figure
 
 
 
