@@ -341,6 +341,7 @@ def main():
     for i in range(fold):
         learner = DecisionTreeLearner()
         training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+        
         validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
         learner.train(training)
 
@@ -350,7 +351,7 @@ def main():
     pruneLearner = copy.deepcopy(learner)
 
     #prune(pruneLearner, learner)
-    learner.dt.display()
+    # learner.dt.display()
 
     # # for each chunk, train on the remaining data and test on the chunk
     # runningAverage = 0
@@ -378,7 +379,7 @@ def main():
         plt.xlabel('x-coordinate')
         plt.ylabel('y-coordinate')
         plt.axis([0, 4, 0, 12])
-        #prune()
+        # prune(learner, dataset)
 
 
     # ========
