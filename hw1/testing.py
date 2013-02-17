@@ -9,12 +9,12 @@ import sys
 # =========================
 # Toy data for testing
 # =========================
-example1 = Example([1,0,1,0,0])
-example2 = Example([1,0,0,0,1])
-example3 = Example([0,0,0,1,0])
-example4 = Example([1,0,0,1,1])
-example5 = Example([0,1,1,1,1])
-example6 = Example([1,1,0,1,0])
+# example1 = Example([1,0,1,0,0])
+# example2 = Example([1,0,0,0,1])
+# example3 = Example([0,0,0,1,0])
+# example4 = Example([1,0,0,1,1])
+# example5 = Example([0,1,1,1,1])
+# example6 = Example([1,1,0,1,0])
 
 # # same examples, but with opposite labels
 # xexample1 = Example([1,0,1,0,1])
@@ -52,21 +52,24 @@ example6 = Example([1,1,0,1,0])
 # wxexample6 = Example([1,1,0,1,1])
 # wxexample6.weight = 0.1
 
-examples1 = [example1,example2,example3,example4,example5,example6]
+# examples1 = [example1,example2,example3,example4,example5,example6]
 # xexamples1 = [xexample1,xexample2,xexample3,xexample4,xexample5,xexample6]
 # halfexamples1 = [xexample1,xexample2,xexample3,example4,example5,example6]
 # wexamples = [wexample1,wexample2,wexample3,wexample4,wexample5,wexample6]
 # wxexamples = [wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6]
 
 
-dataset1 = DataSet(examples1)
+# dataset1 = DataSet(examples1)
 # xdataset1 = DataSet(xexamples1)
 # halfdataset1 = DataSet(halfexamples1)
 # wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
 # wxdataset = DataSet([wxexample1,wxexample2,wxexample3,wxexample4,wxexample5,wxexample6])
 
-learner = DecisionTreeLearner()
-learner.train(dataset1)
+# learner = DecisionTreeLearner()
+# learner.train(dataset1)
+
+
+
 
 # # =========================
 # # Testing for scoreTree
@@ -76,6 +79,9 @@ learner.train(dataset1)
 # assert(scoreTree(learned, dataset1) == 1)
 # assert(scoreTree(learned, xdataset1) == 0)
 # assert(scoreTree(learned, halfdataset1) == 0.5)
+
+
+
 
 # # =========================
 # # Testing for vote

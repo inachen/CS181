@@ -151,42 +151,8 @@ def weightData(learner, dataset, alpha):
     for e in mydata.examples:
         e.weight = e.weight / s
 
-# wexample1 = Example([1,0,1,0,0])
-# wexample1.weight = 0.5
-# wexample2 = Example([1,0,0,0,1])
-# wexample2.weight = 0.1
-# wexample3 = Example([0,0,0,1,0])
-# wexample3.weight = 0.0
-# wexample4 = Example([1,0,0,1,1])
-# wexample4.weight = 0.1
-# wexample5 = Example([0,1,1,1,1])
-# wexample5.weight = 0.2
-# wexample6 = Example([1,1,0,1,0])
-# wexample6.weight = 0.1
-
-# wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
-
-# wxexample1 = Example([1,0,1,0,1])
-# wxexample1.weight = 0.1
-# wxexample2 = Example([1,0,0,0,0])
-# wxexample2.weight = 0.2
-# wxexample3 = Example([0,0,0,1,1])
-# wxexample3.weight = 0.3
-# wxexample4 = Example([1,0,0,1,0])
-# wxexample4.weight = 0.2
-# wxexample5 = Example([0,1,1,1,0])
-# wxexample5.weight = 0.1
-# wxexample6 = Example([1,1,0,1,1])
-# wxexample6.weight = 0.1
-
-# whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
-
-# learned = DecisionTreeLearner()
-# learned.train(wdataset)
-# weightData(learned,whalfdataset,2)
-# print [e.weight for e in whalfdataset.examples]
-
 def boosting(dataset,numrounds,maxdepth):
+    "Performs boosting given the max depth of the tree and the number of rounds"
     learners = []
     mydata = copy.deepcopy(dataset)
     for i in xrange(numrounds):
@@ -203,6 +169,7 @@ def boosting(dataset,numrounds,maxdepth):
     return learners
 
 def splitData(dataset,size):
+    "Takes the data and randomly splits into two smaller ones based on 'size'"
     training = dataset.examples
     if size >= len(training):
         return [None,dataset]
@@ -215,31 +182,6 @@ def splitData(dataset,size):
         del training[num]
     return [DataSet(training,values=dataset.values),DataSet(validation,values=dataset.values)]
 
-# =========================
-# Testing for splitData
-# =========================
-
-# dataset2 = copy.deepcopy(dataset1)
-# dataset3 = copy.deepcopy(dataset1)
-# dataset4 = copy.deepcopy(dataset1)
-
-# splits1 = splitData(dataset2,1)
-# t1 = splits1[0].examples
-# v1 = splits1[1].examples
-# splits2 = splitData(dataset3,3)
-# t2 = splits2[0].examples
-# v2 = splits2[1].examples
-# splits3 = splitData(dataset4,5)
-# t3 = splits3[0].examples
-# v3 = splits3[1].examples
-
-# assert(len(t1) == 5)
-# assert(len(v1) == 1)
-# assert(len(t2) == 3)
-# assert(len(v2) == 3)
-# assert(len(t3) == 1)
-# assert(len(v3) == 5)
-# print [e.attrs for e in t2], [f.attrs for f in v2]
 
 def findEndNodes (tree, attrlist, attrlists, curAttr=None):
   "returns list of end nodes (nodes with only leaves attached) "
@@ -267,21 +209,21 @@ def findEndNodes (tree, attrlist, attrlists, curAttr=None):
   return attrlists
 
 def prune (learner, dataset):
+    ""
+    learner.dt.display()
 
-  learner.dt.display()
+    stumps = findEndNodes (learner.dt, [], [])
 
-  stumps = findEndNodes (learner.dt, [], [])
+    # print stumps
 
-  # print stumps
-
-  for s in stumps:
-    pLearner = copy.deepcopy(learner)
-    pLearner.dt.collapse(s)
-    print scoreTree(pLearner, dataset)
-    print scoreTree(learner, dataset)
-    if scoreTree(pLearner, dataset) >= scoreTree(learner, dataset):
-      print 'pruned'
-      return pLearner
+    for s in stumps:
+        pLearner = copy.deepcopy(learner)
+        pLearner.dt.collapse(s)
+        print scoreTree(pLearner, dataset)
+        print scoreTree(learner, dataset)
+        if scoreTree(pLearner, dataset) >= scoreTree(learner, dataset):
+            print 'pruned'
+            return pLearner
 
 def main():
     arguments = validateInput(sys.argv)
@@ -297,13 +239,6 @@ def main():
 
     data = parse_csv(f.read(), " ")
     dataset = DataSet(data)
-
-    # print dataset.attrs
-    # print dataset.attrnames
-    # learner = DecisionTreeLearner()
-    # learner.train(dataset)
-    # print "original score", scoreTree(learner,dataset)
-    # learner.dt.display()
     
     # Copy the dataset so we have two copies of it
     examples = dataset.examples[:]
@@ -343,7 +278,8 @@ def main():
     #     runningAverage += scoreTree(learner, testing)
 
 
-   # =========================
+
+    # =========================
     # Pruning
     # =========================
 
@@ -388,15 +324,7 @@ def main():
     # if pruneFlag == True:
 
 
-        plt.clf()
-        xs = range(5)
-        ys = [3, 5, 1, 10, 8]
-        p1 = plt.plot(xs, ys, color='b')
-        plt.title('sample graph')
-        plt.xlabel('x-coordinate')
-        plt.ylabel('y-coordinate')
-        plt.axis([0, 4, 0, 12])
-        # prune(learner, dataset)
+
 
 
     # ========
@@ -415,6 +343,7 @@ def main():
 
         else:
             myexamples = copy.deepcopy(examples)
+
             # weight the data so that they all add to one
             for e in myexamples:
                 e.weight = 1.0/len(myexamples)
@@ -433,7 +362,6 @@ def main():
                 runningAverage += scoreWeakTrees(learners, validation)
 
             print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/fold
-            # print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",scoreWeakTrees(learners, validation)
 
     # =========================================================================
     # Graphing Boosting for a range of round-sizes for noisy and non-noisy data
@@ -512,6 +440,9 @@ def main():
     # plt.legend([p1,p2], ['non-noisy','noisy'], 'lower right')
     # savefig('figure.jpg') # save the figure to a file
     # plt.show() # show the figure
+
+
+
 
 
     # =======================================================================

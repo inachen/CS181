@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  16 FEB 2013 22:42
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  16 FEB 2013 23:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -227,57 +227,57 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for U+lasy on input line 20.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 21.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 20.
+LaTeX Font Info:    Try loading font information for U+msa on input line 21.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 20.
+LaTeX Font Info:    Try loading font information for U+msb on input line 21.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 19--33
+Underfull \hbox (badness 10000) in paragraph at lines 20--34
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 19--33
+Underfull \hbox (badness 10000) in paragraph at lines 20--34
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 19--33
+Underfull \hbox (badness 10000) in paragraph at lines 20--34
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 34--41
+Underfull \hbox (badness 10000) in paragraph at lines 35--42
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 34--41
+Underfull \hbox (badness 10000) in paragraph at lines 35--42
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 34--41
+Underfull \hbox (badness 10000) in paragraph at lines 35--42
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 42--47
+Underfull \hbox (badness 10000) in paragraph at lines 43--48
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 42--47
+Underfull \hbox (badness 10000) in paragraph at lines 43--48
 
  []
 
@@ -287,45 +287,45 @@ Underfull \hbox (badness 10000) in paragraph at lines 42--47
 <tree.jpg, id=11, 421.575pt x 216.81pt>
 File: tree.jpg Graphic file (type jpg)
  <use tree.jpg>
-Package pdftex.def Info: tree.jpg used on input line 52.
+Package pdftex.def Info: tree.jpg used on input line 53.
 (pdftex.def)             Requested size: 369.88582pt x 190.23097pt.
 
-<tree2.jpg, id=12, 112.42pt x 112.42pt>
+<tree2.jpg, id=12, 104.39pt x 104.39pt>
 File: tree2.jpg Graphic file (type jpg)
  <use tree2.jpg>
-Package pdftex.def Info: tree2.jpg used on input line 59.
-(pdftex.def)             Requested size: 113.81102pt x 113.81604pt.
+Package pdftex.def Info: tree2.jpg used on input line 60.
+(pdftex.def)             Requested size: 99.58464pt x 99.59042pt.
  [2 <./tree.jpg> <./tree2.jpg>]
-Underfull \hbox (badness 10000) in paragraph at lines 88--98
+Underfull \hbox (badness 10000) in paragraph at lines 89--99
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 88--98
+Underfull \hbox (badness 10000) in paragraph at lines 89--99
 
  []
 
 <figure.jpg, id=16, 642.4pt x 481.8pt>
 File: figure.jpg Graphic file (type jpg)
  <use figure.jpg>
-Package pdftex.def Info: figure.jpg used on input line 101.
+Package pdftex.def Info: figure.jpg used on input line 102.
 (pdftex.def)             Requested size: 312.9803pt x 234.73871pt.
  [3]
 <figure2.jpg, id=21, 642.4pt x 481.8pt>
 File: figure2.jpg Graphic file (type jpg)
  <use figure2.jpg>
-Package pdftex.def Info: figure2.jpg used on input line 109.
+Package pdftex.def Info: figure2.jpg used on input line 110.
 (pdftex.def)             Requested size: 312.9803pt x 234.73871pt.
  [4 <./figure.jpg>]
 [5 <./figure2.jpg>] (./pset1.aux) ) 
 Here is how much of TeX's memory you used:
  2454 strings out of 493488
  32658 string characters out of 3141326
- 90671 words of memory out of 3000000
+ 91671 words of memory out of 3000000
  5723 multiletter control sequences out of 15000+200000
  8603 words of font info for 35 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 37i,8n,24p,686b,493s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 37i,8n,24p,676b,493s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/local/texlive/2012/texmf-dist/fonts/ty
 pe1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2012/texmf-dist/fonts/typ
 e1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1
@@ -333,7 +333,7 @@ e1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1
 ublic/amsfonts/cm/cmr8.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmsy8.pfb>
-Output written on pset1.pdf (5 pages, 176153 bytes).
+Output written on pset1.pdf (5 pages, 176709 bytes).
 PDF statistics:
  48 PDF objects out of 1000 (max. 8388607)
  30 compressed objects within 1 object stream
