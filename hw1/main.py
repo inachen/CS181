@@ -12,6 +12,7 @@ class Globals:
     pruneFlag = False
     valSetSize = 0
     dataset = None
+    pruned = True
 
 
 ##Classify
@@ -250,42 +251,52 @@ def findEndNodes (tree, attrlist, attrlists, curAttr=None):
     if curAttr != None:
       attrlist.append(curAttr)
     #print attrlist
-    print 'node'
-    #print attrlists
-    print tree.branches.values()
+    # print 'node'
+    # print attrlists
+    # print tree.branches.values()
     if every(lambda x: x.nodetype == DecisionTree.LEAF, tree.branches.values()):
-      print 'end node'
+      # print 'end node'
       #print attrlist
       #print attrlists
       #holder = copy.deepcopy(attrlist)
       attrlists.append(attrlist)
+
     else:
-      print 'not end node'
-      print tree.branches.keys() 
+      # print 'not end node'
+      # print tree.branches.keys() 
       for a in tree.branches.keys():
-        findEndNodes(tree.branches[a], attrlist, attrlists, a)
+        cplist = copy.deepcopy(attrlist)
+        findEndNodes(tree.branches[a], cplist, attrlists, a)
   return attrlists
 
 def prune (learner, dataset):
 
-  learner.dt.display()
+      # learner.dt.display()
 
-  stumps = findEndNodes (learner.dt, [], [])
+      stumps = findEndNodes (learner.dt, [], [])
 
-  # print stumps
+      # print stumps
+      print stumps
+      for s in stumps:
+        pLearner = copy.deepcopy(learner)
+        pLearner.dt.collapse(s)
+        print '-----'
+        print scoreTree(pLearner, dataset)
+        print scoreTree(learner, dataset)
+        if scoreTree(pLearner, dataset) >= scoreTree(learner, dataset):
+          print 'x'
+          pruned = True
+          # print 'pruned'
+          return prune(pLearner, dataset)
+      print 'o'
+      # pruned = False
+      return learner
 
-  for s in stumps:
-    pLearner = copy.deepcopy(learner)
-    pLearner.dt.collapse(s)
-    print scoreTree(pLearner, dataset)
-    print scoreTree(learner, dataset)
-    if scoreTree(pLearner, dataset) >= scoreTree(learner, dataset):
-      print 'pruned'
-      return pLearner
 
 def main():
     arguments = validateInput(sys.argv)
     noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds = arguments
+    # pruned = True
     print noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds
 
     # Read in the data file
@@ -341,23 +352,47 @@ def main():
     #     learner.train(training)
 
     #     runningAverage += scoreTree(learner, testing)
+    # #print the average score
+    # print "The average cross-validation score is", (runningAverage / fold)
 
 
-   # =========================
+    # =========================
     # Pruning
     # =========================
 
-    runningAverage = 0
+    # pruned = True
+
+    # keep track of scores for unpruned learner
+    runningAverageNP = 0
+
+    # keep track of scores for pruned learner
+    runningAverageP = 0
     for i in range(fold):
-        learner = DecisionTreeLearner()
-        training = DataSet(dataset.examples[(i*chunkLength):((i+fold-1)*chunkLength]-, values=dataset.values)
-        
-        
-        testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
-        learner.train(training)
+    # i = 2
+      # divide data into training, validation, and testing sets
+      learner = DecisionTreeLearner()
+      training = DataSet(dataset.examples[(i*chunkLength):((i + fold - 1) * chunkLength - valSetSize)], values=dataset.values)
+      # print len(dataset.examples[((i + fold - 1) * chunkLength - valSetSize): (i+fold-1)*chunkLength])
+      validation = DataSet(dataset.examples[((i + fold - 1) * chunkLength - valSetSize): (i+fold-1)*chunkLength])
+      testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+      learner.train(training)
 
-        runningAverage += scoreTree(learner, testing)
+      learner.dt.display()
+      
+      # print pruned
+      # pruned = True
+      # prunedLearner = prune(learner, validation)
+      # while pruned == True:
+        # learner = prunedLearner
+      plearner = prune(learner, validation)
+      plearner.dt.display()
+      # print 'o'
 
+      runningAverageNP += scoreTree(learner, testing)
+      runningAverageP += scoreTree(plearner, testing)
+
+    print "Not pruned:", (runningAverageNP/fold)
+    print "pruned:", (runningAverageP/fold)
     # make pruning tree
     # pruneLearner = copy.deepcopy(learner)
 
@@ -388,15 +423,15 @@ def main():
     # if pruneFlag == True:
 
 
-        plt.clf()
-        xs = range(5)
-        ys = [3, 5, 1, 10, 8]
-        p1 = plt.plot(xs, ys, color='b')
-        plt.title('sample graph')
-        plt.xlabel('x-coordinate')
-        plt.ylabel('y-coordinate')
-        plt.axis([0, 4, 0, 12])
-        # prune(learner, dataset)
+    plt.clf()
+    xs = range(5)
+    ys = [3, 5, 1, 10, 8]
+    p1 = plt.plot(xs, ys, color='b')
+    plt.title('sample graph')
+    plt.xlabel('x-coordinate')
+    plt.ylabel('y-coordinate')
+    plt.axis([0, 4, 0, 12])
+    # prune(learner, dataset)
 
 
     # ========
