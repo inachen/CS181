@@ -325,9 +325,10 @@ def main():
     # =========================
 
     # Divide data into however many chunks
+    fold = 10
 
     dataLength = len(examples)
-    chunkLength = dataLength/valSetSize
+    chunkLength = dataLength/fold
 
     # for each chunk, train on the remaining data and test on the chunk
     # runningAverage = 0
@@ -369,16 +370,16 @@ def main():
 
     # for each chunk, train on the remaining data and test on the chunk
     # runningAverage = 0
-    # for i in range(valSetSize):
+    # for i in range(fold):
     #     learner = DecisionTreeLearner()
-    #     training = DataSet(dataset.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset.values)
-    #     validation = DataSet(dataset.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+    #     training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+    #     validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
     #     learner.train(training)
     #     print "score", scoreTree(learner, validation)
     #     runningAverage += scoreTree(learner, validation)
 
     # # print the average score
-    # print "The average cross-validation score is", (runningAverage / valSetSize)
+    # print "The average cross-validation score is", (runningAverage / fold)
 
     # =========================
     # Validation Set Pruning
@@ -405,11 +406,11 @@ def main():
     # Divide data into chunks
 
     dataLength = len(examples)
-    chunkLength = dataLength/valSetSize
+    chunkLength = dataLength/fold
 
     if boostRounds > 0 and maxDepth > 0:
 
-        if valSetSize >= len(examples):
+        if chunkLength >= len(examples):
             print "Please make sure your validation set size is smaller than your data set"
 
         else:
@@ -423,15 +424,15 @@ def main():
 
             # keep track of the score for each validation 
             runningAverage = 0
-            for i in range(valSetSize):
+            for i in range(fold):
                 learner = DecisionTreeLearner()
-                training = DataSet(dataset2.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset2.values)
-                validation = DataSet(dataset2.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+                training = DataSet(dataset2.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset2.values)
+                validation = DataSet(dataset2.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
                 # get all the weak learners
                 learners = boosting(training, boostRounds, maxDepth)
                 runningAverage += scoreWeakTrees(learners, validation)
 
-            print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/valSetSize
+            print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/fold
             # print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",scoreWeakTrees(learners, validation)
 
     # =========================================================================
@@ -458,15 +459,15 @@ def main():
     # # keep track of the score for each validation 
     # for roundnum in range(1,rounds + 1):
     #     runningAverage = 0
-    #     for i in range(valSetSize):
+    #     for i in range(fold):
     #         learner = DecisionTreeLearner()
-    #         training = DataSet(dataset3.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset3.values)
-    #         validation = DataSet(dataset3.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+    #         training = DataSet(dataset3.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset3.values)
+    #         validation = DataSet(dataset3.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
     #         # get all the weak learners
     #         learners = boosting(training, roundnum, 1)
     #         runningAverage += scoreWeakTrees(learners, validation)
 
-    #     results.append(runningAverage/valSetSize)
+    #     results.append(runningAverage/fold)
 
     # # now repeat for noisy data
     # g = open("noisy.csv")
@@ -487,15 +488,15 @@ def main():
     # # keep track of the score for each validation 
     # for roundnum in range(1,rounds + 1):
     #     runningAverage = 0
-    #     for i in range(valSetSize):
+    #     for i in range(fold):
     #         learner = DecisionTreeLearner()
-    #         training = DataSet(dataset4.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset4.values)
-    #         validation = DataSet(dataset4.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+    #         training = DataSet(dataset4.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset4.values)
+    #         validation = DataSet(dataset4.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
     #         # get all the weak learners
     #         learners = boosting(training, roundnum, 1)
     #         runningAverage += scoreWeakTrees(learners, validation)
 
-    #     resultsnoise.append(runningAverage/valSetSize)
+    #     resultsnoise.append(runningAverage/fold)
 
     # plt.clf()
     # xs = range(1,rounds + 1)
@@ -538,17 +539,17 @@ def main():
     # for roundnum in range(1,rounds + 1):
     #     testaverage = 0
     #     trainingaverage = 0
-    #     for i in range(valSetSize):
+    #     for i in range(fold):
     #         learner = DecisionTreeLearner()
-    #         training = DataSet(dataset1.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset1.values)
-    #         validation = DataSet(dataset1.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+    #         training = DataSet(dataset1.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset1.values)
+    #         validation = DataSet(dataset1.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
     #         # get all the weak learners
     #         learners = boosting(training, roundnum, 1)
     #         testaverage += scoreWeakTrees(learners, validation)
     #         trainingaverage += scoreWeakTrees(learners, training)
 
-    #     resultstest.append(testaverage/valSetSize)
-    #     resultstraining.append(trainingaverage/valSetSize)
+    #     resultstest.append(testaverage/fold)
+    #     resultstraining.append(trainingaverage/fold)
 
     # # plot 
     # plt.clf()
