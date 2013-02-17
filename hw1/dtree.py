@@ -293,6 +293,15 @@ class DecisionTree:
         self.branches[val] = subtree
         return self
 
+    def collapse(self, attrlist, classification):
+        "Collapses the node with the given "
+        if attrlist == []:
+            self.nodetype = LEAF
+            self.classification = classification
+        else:
+            attr = attrlist.pop(0)
+            collapse(self.branches[attr], attrlist, classification)
+
     def display(self, indent=0):
         if self.nodetype == DecisionTree.LEAF:
             print "leaf %d" % self.classification

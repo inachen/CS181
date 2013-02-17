@@ -249,12 +249,34 @@ def splitData(dataset,size):
 # assert(len(v3) == 5)
 # print [e.attrs for e in t2], [f.attrs for f in v2]
 
-#def findEndNodes (tree):
-#  "returns list of end nodes (nodes with only leaves attached) "
+def findEndNodes (tree, attrlist, attrlists):
+  "returns list of end nodes (nodes with only leaves attached) "
+  if tree.nodetype == LEAF:
+    attrlists.append(attrlist)
+    return attrlists
+  else:
+    attrlst.append(tree.attr)
+    for a, c in tree.branches.items():
+      findEndNodes(tree.branches[a], attrlst, attrlists)
+
+def prune (pLearner, origLearner, examples, attrs, validation):
+
+  findEndNodes
+
+  def traverse (tree, examples, attrs, attrlist):
+    
+    if tree.attr == None:
+      return
+    else:
+      attrlist.append(tree.attr)
+      attrs = removall(tree.attr, attrs)
+      for a, c in tree.branches.iteritems():
+        if c.nodetype == DecisionTree.NODE:
+          traverse(tree.branches[a], examples, attrs, attrlist)
+      #for a in attrlist
 
 
 
-def prune (pLearner, origLearner, validation):
   nodelist = []
   classlist = []
   for a, c in pLearner.dt.branches.iteritems():
@@ -276,7 +298,6 @@ def prune (pLearner, origLearner, validation):
         pLearner.dt = c
         pLearner.dt = prune(pLearner, origLearner, validation)
 
-
 def main():
     arguments = validateInput(sys.argv)
     noisyFlag, pruneFlag, valSetSize, maxDepth, boostRounds = arguments
@@ -291,6 +312,9 @@ def main():
 
     data = parse_csv(f.read(), " ")
     dataset = DataSet(data)
+
+    print dataset.attrs
+    print dataset.attrnames
     
     # Copy the dataset so we have two copies of it
     examples = dataset.examples[:]
@@ -323,12 +347,13 @@ def main():
         validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
         learner.train(training)
 
-        # make pruning tree
-        pruneLearner = copy.deepcopy(learner)
-
-#        prune(pruneLearner, learner)
-
         runningAverage += scoreTree(learner, validation)
+
+    # make pruning tree
+    pruneLearner = copy.deepcopy(learner)
+
+    #prune(pruneLearner, learner)
+    learner.dt.display()
 
     # print the average score
     print "The average cross-validation score is", (runningAverage / fold)
