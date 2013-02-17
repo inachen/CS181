@@ -250,19 +250,38 @@ def splitData(dataset,size):
 # assert(len(v3) == 5)
 # print [e.attrs for e in t2], [f.attrs for f in v2]
 
-def findEndNodes (tree, attrlist, attrlists):
+def findEndNodes (tree, attrlist, attrlists, curAttr=None):
   "returns list of end nodes (nodes with only leaves attached) "
-  if tree.nodetype == LEAF:
-    attrlists.append(attrlist)
-    return attrlists
-  else:
-    attrlst.append(tree.attr)
-    for a, c in tree.branches.items():
-      findEndNodes(tree.branches[a], attrlst, attrlists)
+  #attrlists.append(attrlist)
+  #print attrlists
+  if tree.nodetype == DecisionTree.NODE:
+    #print tree.attr
+    if curAttr != None:
+      attrlist.append(curAttr)
+    #print attrlist
+    print 'node'
+    #print attrlists
+    print tree.branches.values()
+    if every(lambda x: x.nodetype == DecisionTree.LEAF, tree.branches.values()):
+      print 'end node'
+      #print attrlist
+      #print attrlists
+      #holder = copy.deepcopy(attrlist)
+      attrlists.append(attrlist)
+
+    else:
+      print 'not end node'
+      print tree.branches.keys() 
+      for a in tree.branches.keys():
+        findEndNodes(tree.branches[a], attrlist, attrlists, a)
+  return attrlists
 
 def prune (pLearner, origLearner, examples, attrs, validation):
 
-  findEndNodes
+  stumps = findEndNodes (pLearner.dt, pLearner.dt.attr, [])
+
+  for s in stumps:
+
 
   def traverse (tree, examples, attrs, attrlist):
     

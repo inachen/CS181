@@ -1,13 +1,14 @@
 from dtree import *
 import sys
 
-def findEndNodes (tree, attrlist, attrlists):
+def findEndNodes (tree, attrlist, attrlists, curAttr=None):
   "returns list of end nodes (nodes with only leaves attached) "
   #attrlists.append(attrlist)
   #print attrlists
   if tree.nodetype == DecisionTree.NODE:
     #print tree.attr
-    #attrlist.append(tree.attr)
+    if curAttr != None:
+      attrlist.append(curAttr)
     #print attrlist
     print 'node'
     #print attrlists
@@ -18,11 +19,12 @@ def findEndNodes (tree, attrlist, attrlists):
     	#print attrlists
     	#holder = copy.deepcopy(attrlist)
     	attrlists.append(attrlist)
+
     else:
       print 'not end node'
       print tree.branches.keys() 
       for a in tree.branches.keys():
-        findEndNodes(tree.branches[a], attrlist, attrlists)
+        findEndNodes(tree.branches[a], attrlist, attrlists, a)
   return attrlists
 
 # how to see if reach all leaves
@@ -47,9 +49,11 @@ branch3 = [a3, b3, c3]
 tree3 = DecisionTree(DecisionTree.NODE, attr=4, branches = branch2)
 tree3.display()
 leaves = []
-leaves = findEndNodes(tree3, [tree3.attr], [])
+leaves = findEndNodes(tree3, [], [])
 leavesp = copy.deepcopy
 print leaves
-		
+print leaves[0]
+tree3.collapse(leaves[0])
+tree3.display()
 #ans = every(lambda x: x.branches.nodetype == DecisionTree.LEAF, tree)
 #print ans
