@@ -298,15 +298,12 @@ def main():
     data = parse_csv(f.read(), " ")
     dataset = DataSet(data)
 
-<<<<<<< HEAD
-    print dataset.attrs
-    print dataset.attrnames
-=======
+    # print dataset.attrs
+    # print dataset.attrnames
     # learner = DecisionTreeLearner()
     # learner.train(dataset)
     # print "original score", scoreTree(learner,dataset)
     # learner.dt.display()
->>>>>>> making graphs
     
     # Copy the dataset so we have two copies of it
     examples = dataset.examples[:]
@@ -339,23 +336,19 @@ def main():
     #     training = DataSet(dataset.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset.values)
     #     validation = DataSet(dataset.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
     #     learner.train(training)
-
-<<<<<<< HEAD
-        runningAverage += scoreTree(learner, validation)
+    #     runningAverage += scoreTree(learner, validation)
 
     # make pruning tree
-    pruneLearner = copy.deepcopy(learner)
+    # pruneLearner = copy.deepcopy(learner)
 
     #prune(pruneLearner, learner)
-    learner.dt.display()
-=======
+    #learner.dt.display()
     #     # make pruning tree
     #     pruneLearner = copy.deepcopy(learner)
 
     #     # prune(pruneLearner, learner)
 
     #     runningAverage += scoreTree(learner, validation)
->>>>>>> making graphs
 
     # for each chunk, train on the remaining data and test on the chunk
     # runningAverage = 0
@@ -491,7 +484,7 @@ def main():
     # plt.title('Cross-validated test performance vs. number of boosting rounds')
     # plt.xlabel('Number of Boosting Rounds')
     # plt.ylabel('Test Performance')
-    # plt.axis([0, 33, 0.77, 1])
+    # plt.axis([0, rounds+2, 0.77, 1])
 
     # plt.legend([p1,p2], ['non-noisy','noisy'], 'lower right')
     # savefig('figure.jpg') # save the figure to a file
@@ -501,7 +494,51 @@ def main():
     # run for rounds 1 through 15 on non-noisy data 
     # get both training and test data
 
+    rounds = 15
 
+    resultstest = []
+    resultstraining = []
+
+    # weight the data so that they all add to one
+    myexamples = copy.deepcopy(examples)
+    # weight the data so that they all add to one
+    for e in myexamples:
+        e.weight = 1.0/len(myexamples)
+
+    dataset1 = DataSet(myexamples)
+    dataset1.examples.extend(myexamples)
+
+    # keep track of the score for each validation 
+    for roundnum in range(1,rounds + 1):
+        testaverage = 0
+        trainingaverage = 0
+        for i in range(valSetSize):
+            learner = DecisionTreeLearner()
+            training = DataSet(dataset1.examples[(i*chunkLength):(i+valSetSize-1)*chunkLength], values=dataset1.values)
+            validation = DataSet(dataset1.examples[(i+valSetSize-1)*chunkLength:(i+valSetSize)*chunkLength])
+            # get all the weak learners
+            learners = boosting(training, roundnum, 1)
+            testaverage += scoreWeakTrees(learners, validation)
+            trainingaverage += scoreWeakTrees(learners, training)
+
+        resultstest.append(testaverage/valSetSize)
+        resultstraining.append(trainingaverage/valSetSize)
+
+    # plot 
+    plt.clf()
+    xs = range(1,rounds + 1)
+    ys = resultstest
+    ys2 = resultstraining
+    p1, = plt.plot(xs, ys, color='b')
+    p2, = plt.plot(xs, ys2, color='r')
+    plt.title('Cross-validated performance vs. number of boosting rounds')
+    plt.xlabel('Number of Boosting Rounds')
+    plt.ylabel('Performance')
+    plt.axis([0, rounds+2, 0.77, 1])
+
+    plt.legend([p1,p2], ['test performance','training performance'], 'lower right')
+    savefig('figure2.jpg') # save the figure to a file
+    plt.show() # show the figure
 
 
 

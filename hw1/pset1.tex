@@ -2,9 +2,7 @@
 \usepackage{latexsym}
 \usepackage{amssymb,amsmath}
 \usepackage{float}
-%%\usepackage[dvips]{graphicx}
 \usepackage{graphicx}
-%%\usepackage[dvips]{graphics}
 \textwidth=6in \textheight=8.5in
 
 \restylefloat{figure}
@@ -18,17 +16,55 @@ Problem Set 1
 
 	\item 
 		\begin{enumerate}
-			\item
-			\item
-			\item
-		\end{enumerate}
+			\item Here is the breakdown of the data:\\\\
+				\begin{tabular}{|c|c|c|}
+        				\hline
+        				~            & 1 & 0 \\ \hline
+        				A = 1 & 2      & 2      \\ 
+        				A = 0 & 2      & 1      \\
+        				\hline
+        				B = 1 & 1      & 1      \\ 
+        				B = 0 & 3      & 2      \\
+        				\hline
+					Total & 4      & 3      \\
+        				\hline
+    				\end{tabular}
+\\\\\\Let $Y$ represent the space of the label
+				\begin{align*}Information gain &= H(Y) - H(Y|X)\\
+							& = H(Y) -\Sigma_{x,y}p(x|y)log_{2}\frac{1}{p(x|y)}\end{align*}
+				$H(Y) = \frac{4}{7}log_{2}\frac{7}{4} + \frac{3}{7}log_{2}\frac{7}{3} = 0.985$\\\\
+				For A:\\\\
+				$H(Y|A = 1) = 0.5log_{2}2 + 0.5log_{2}2 = 1$\\
+				$H(Y|A = 0) = \frac{2}{3}log_{2}\frac{3}{2} + \frac{1}{3}log_{2}3 = 0.918$\\
+				$H(Y|A) = \frac{4}{7}(1) + \frac{3}{7}0.918 = 0.965$\\
+				$I(A ; Y) = 0.985 - 0.965 = \fbox{0.02}$\\
 
+				For B:\\\\
+				$H(Y|B = 1) = 0.5log_{2}2 + 0.5log_{2}2 = 1$\\
+				$H(Y|B = 0) = \frac{2}{5}log_{2}\frac{5}{3} + \frac{2}{5}log_{2}\frac{5}{2} = 0.971$\\
+				$H(Y|B) = \frac{4}{7}(1) + \frac{3}{7}(0.971) = 0.979$\\
+				$I(B ; Y) = 0.985 - 0.979 = \fbox{0.006}$\\
+
+				Since A has more mutual information with the label, ID3 would split on attribute A. Splitting on A could be more useful because even though A = 1 does not give any extra information, when A=0, the distribution becomes split into 1/3 and 2/3. This is better than when B = 0, when the distribution becomes 2/5 and 3/5 since 1/3 is farther from 1/2 than 3/5. \pagebreak
+			\item The complete tree:
+				\begin{figure}[H]
+					\begin{center}
+					\includegraphics[width=130mm]{tree.jpg}
+					\end{center}
+				\end{figure}
+
+			\item We would get the same error if we split on whether or not B and C have the same attribute. This shows that ID3 cannot combine properties of more than one attribute when deciding how to split.
+				\begin{figure}[H]
+					\begin{center}
+					\includegraphics[width=40mm]{tree2.jpg}
+					\end{center}
+				\end{figure}
+		\end{enumerate}
 	\item
 		\begin{enumerate}
 			\item The average ten-fold cross-validation score for the non-noisy data is 0.87 while the score for noise data is 0.78.
 			\item 
 		\end{enumerate}
-
 
 	\item
 		\begin{enumerate}
@@ -55,11 +91,14 @@ Problem Set 1
 					\item 
 						Boosting performs consistently worse on noisy data compared to non-noisy data no matter how many rounds (from 1 to 30) are performed. This is because the algorithm gives highers weights to data points that are predicted incorrectly. Therefore, if there are inconsistencies within the data, the algorithm will focus on the inconsistent data more than the rest of the data.
 						\begin{figure}[H]
-						\includegraphics[width=150mm]{figure.pdf}
+						\includegraphics[width=150mm]{figure.jpg}
 						\end{figure}
 						
 					\item 
-					\item 
+					\item The algorithm improves with more rounds of boosting both on the training and on the test data. The performance on the test data continues to improve a bit after the performance on the training data plateaus at zero error. This is expected because each individual tree only splits once and thus avoids splitting on an attribute that is not actually important. Because of this, each additional tree does not mold the algorithm super specifically to the nuances of the training data and the algorithm avoids overfitting.
+						\begin{figure}[H]
+						\includegraphics[width=150mm]{figure2.jpg}
+						\end{figure}
 				\end{enumerate}
 		\end{enumerate}
 
