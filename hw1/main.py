@@ -195,18 +195,19 @@ def weightData(learner, dataset, alpha):
 
 def boosting(dataset,numrounds,maxdepth):
     learners = []
-    mydata = dataset
-    for i in xrange(numrounds-1):
+    mydata = copy.deepcopy(dataset)
+    for i in xrange(numrounds):
         learner = DecisionTreeLearner()
         learner.train(mydata,cutoff=maxdepth)
-        print learner.dt
+        #learner.dt.display()
         alpha = weightHyp(learner,mydata)
         print "alpha", alpha
         if alpha == sys.maxint:
             return [[learner,1]]
         weightData(learner,mydata,alpha)
+        print [e.weight for e in mydata.examples]
         #print [e.weight for e in mydata.examples]
-        print "score", scoreTree(learner,mydata)
+        #print "score", scoreTree(learner,mydata)
         learners.append([learner,alpha])
     return learners
 
@@ -332,12 +333,15 @@ def main():
     # =========================
     # Ten-fold Cross-Validation
     # =========================
+    learner = DecisionTreeLearner()
+    learner.train(dataset)
+    learner.dt.display()
 
-    # Divide data into 10 chunks
-    fold = 10
+    # # Divide data into 10 chunks
+    # fold = 10
 
-    dataLength = len(examples)
-    chunkLength = dataLength/fold
+    # dataLength = len(examples)
+    # chunkLength = dataLength/fold
 
     # for each chunk, train on the remaining data and test on the chunk
     runningAverage = 0
@@ -355,8 +359,17 @@ def main():
     #prune(pruneLearner, learner)
     learner.dt.display()
 
-    # print the average score
-    print "The average cross-validation score is", (runningAverage / fold)
+    # # for each chunk, train on the remaining data and test on the chunk
+    # runningAverage = 0
+    # for i in range(fold):
+    #     learner = DecisionTreeLearner()
+    #     training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+    #     validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+    #     learner.train(training)
+    #     runningAverage += scoreTree(learner, validation)
+
+    # # print the average score
+    # print "The average cross-validation score is", (runningAverage / fold)
 
     # =========================
     # Validation Set Pruning
@@ -399,7 +412,7 @@ def main():
             # validation = split[1]
 
             runningAverage = 0
-            for i in range(fold):
+            for i in range(1):
                 learner = DecisionTreeLearner()
                 training = DataSet(dataset2.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset2.values)
                 validation = DataSet(dataset2.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
