@@ -349,49 +349,45 @@ class DecisionTreeLearner(Learner):
         else:
             self.dt = self.short_tree_learning(dataset.examples, dataset.inputs, cutoff)
 
-    def short_tree_learning(self, examples, attrs, cutoff, default=None):
-        if len(examples) == 0:
-            return DecisionTree(DecisionTree.LEAF, classification=default)
-        elif self.all_same_class(examples):
-            return DecisionTree(DecisionTree.LEAF,
-                                classification=examples[0].attrs[self.dataset.target])
-        elif  len(attrs) == 0 or cutoff == 1:
-            return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
-        else:
-            best = self.choose_attribute(attrs, examples)
-            tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
-            # if cutoff <= 1:
-            #     for (v, examples_i) in self.split_by(best, examples):
-            #         subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
-            #         tree.add(v, subtree)
-            #     return tree
-            for (v, examples_i) in self.split_by(best, examples):
-                subtree = self.short_tree_learning(examples_i,
-                  removeall(best, attrs), cutoff-1, self.majority_value(examples))
-                tree.add(v, subtree)
-            return tree
-
     # def short_tree_learning(self, examples, attrs, cutoff, default=None):
     #     if len(examples) == 0:
     #         return DecisionTree(DecisionTree.LEAF, classification=default)
     #     elif self.all_same_class(examples):
     #         return DecisionTree(DecisionTree.LEAF,
     #                             classification=examples[0].attrs[self.dataset.target])
-    #     elif  len(attrs) == 0:
+    #     elif  len(attrs) == 0 or cutoff == 1:
     #         return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
     #     else:
     #         best = self.choose_attribute(attrs, examples)
     #         tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
-    #         if cutoff <= 1:
-    #             for (v, examples_i) in self.split_by(best, examples):
-    #                 subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
-    #                 tree.add(v, subtree)
-    #             return tree
     #         for (v, examples_i) in self.split_by(best, examples):
     #             subtree = self.short_tree_learning(examples_i,
     #               removeall(best, attrs), cutoff-1, self.majority_value(examples))
     #             tree.add(v, subtree)
     #         return tree
+
+    def short_tree_learning(self, examples, attrs, cutoff, default=None):
+        if len(examples) == 0:
+            return DecisionTree(DecisionTree.LEAF, classification=default)
+        elif self.all_same_class(examples):
+            return DecisionTree(DecisionTree.LEAF,
+                                classification=examples[0].attrs[self.dataset.target])
+        elif  len(attrs) == 0:
+            return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
+        else:
+            best = self.choose_attribute(attrs, examples)
+            tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
+            if cutoff <= 1:
+                for (v, examples_i) in self.split_by(best, examples):
+                    subtree = DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples_i))
+                    tree.add(v, subtree)
+                return tree
+            else:
+                for (v, examples_i) in self.split_by(best, examples):
+                    subtree = self.short_tree_learning(examples_i,
+                      removeall(best, attrs), cutoff-1, self.majority_value(examples))
+                    tree.add(v, subtree)
+                return tree
 
     def decision_tree_learning(self, examples, attrs, default=None):
         if len(examples) == 0:
@@ -403,7 +399,6 @@ class DecisionTreeLearner(Learner):
             return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
         else:
             best = self.choose_attribute(attrs, examples)
-            print "best", best
             tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
             for (v, examples_i) in self.split_by(best, examples):
                 subtree = self.decision_tree_learning(examples_i,
@@ -413,9 +408,8 @@ class DecisionTreeLearner(Learner):
 
     def choose_attribute(self, attrs, examples):
         "Choose the attribute with the highest information gain."
-        for a in xrange(len(attrs)):
-            print a, self.information_gain(attrs[a], examples)
-        #print attrs, lambda a: self.information_gain(a, examples)
+        # for a in xrange(len(attrs)):
+        #     print a, self.information_gain(attrs[a], examples)
         return argmax(attrs, lambda a: self.information_gain(a, examples))
 
     def all_same_class(self, examples):
@@ -426,12 +420,19 @@ class DecisionTreeLearner(Learner):
            if e.attrs[target] != class0: return False
         return True
 
+    # def majority_value(self, examples):
+    #     """Return the most popular target value for this set of examples.
+    #     (If target is binary, this is the majority; otherwise plurality.)"""
+    #     g = self.dataset.target
+    #     return argmax(self.dataset.values[g],
+    #                   lambda v: self.count(g, v, examples))
+
     def majority_value(self, examples):
         """Return the most popular target value for this set of examples.
         (If target is binary, this is the majority; otherwise plurality.)"""
         g = self.dataset.target
         return argmax(self.dataset.values[g],
-                      lambda v: self.count(g, v, examples))
+                      lambda v: self.weightedcount(g, v, examples))
 
     def count(self, attr, val, examples):
         return count_if(lambda e: e.attrs[attr] == val, examples)
@@ -448,12 +449,11 @@ class DecisionTreeLearner(Learner):
             target = self.dataset.target
             return information_content([self.weightedcount(target, v, examples)
                                         for v in self.dataset.values[target]])
-        N = float(len(examples))
+        N = float(sum([e.weight for e in examples]))
         remainder = 0
         for (v, examples_i) in self.split_by(attr, examples):
-            # change the remainder for weighted data
-            remainder += (len(examples_i) / N) * I(examples_i)
-            #remainder += sum([e.weight for e in examples_i]) * I(examples_i)
+            #remainder += (len(examples_i) / N) * I(examples_i)
+            remainder += (sum([e.weight for e in examples_i])/N) * I(examples_i)
         return I(examples) - remainder
 
     def split_by(self, attr, examples=None):
@@ -508,24 +508,24 @@ def information_content(values):
 # assert(abs(learner.information_gain(0, myexamples) - 0.3219) < 0.0001)
 #_________________________________________________
 
-wexample1 = Example([1,0,1,0,0])
-wexample1.weight = 0.5
-wexample2 = Example([1,0,0,0,1])
-wexample2.weight = 0.1
-wexample3 = Example([0,0,0,1,0])
-wexample3.weight = 0.0
-wexample4 = Example([1,0,0,1,1])
-wexample4.weight = 0.1
-wexample5 = Example([0,1,1,1,1])
-wexample5.weight = 0.2
-wexample6 = Example([1,1,0,1,0])
-wexample6.weight = 0.1
+# wexample1 = Example([1,0,1,0,0])
+# wexample1.weight = 0.5
+# wexample2 = Example([1,0,0,0,1])
+# wexample2.weight = 0.1
+# wexample3 = Example([0,0,0,1,0])
+# wexample3.weight = 0.0
+# wexample4 = Example([1,0,0,1,1])
+# wexample4.weight = 0.1
+# wexample5 = Example([0,1,1,1,1])
+# wexample5.weight = 0.2
+# wexample6 = Example([1,1,0,1,0])
+# wexample6.weight = 0.1
 
-mydataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+# mydataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
 
 
-learner = DecisionTreeLearner()
-learner.train(mydataset, cutoff=2)
-learner.dataset = mydataset
+# learner = DecisionTreeLearner()
+# learner.train(mydataset, cutoff=2)
+# learner.dataset = mydataset
 
 
