@@ -321,7 +321,7 @@ def main():
     
 
     # =========================
-    # Cross-Validation
+    # Fold Cross-Validation
     # =========================
 
     # Divide data into however many chunks
@@ -330,15 +330,32 @@ def main():
     chunkLength = dataLength/valSetSize
 
     # for each chunk, train on the remaining data and test on the chunk
+    # runningAverage = 0
+    # for i in range(fold):
+    #     learner = DecisionTreeLearner()
+    #     training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+
+        
+    #     testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+    #     learner.train(training)
+
+    #     runningAverage += scoreTree(learner, testing)
+
+
+   # =========================
+    # Pruning
+    # =========================
+
     runningAverage = 0
     for i in range(fold):
         learner = DecisionTreeLearner()
-        training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+        training = DataSet(dataset.examples[(i*chunkLength):((i+fold-1)*chunkLength]-, values=dataset.values)
         
-        validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+        
+        testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
         learner.train(training)
 
-        runningAverage += scoreTree(learner, validation)
+        runningAverage += scoreTree(learner, testing)
 
     # make pruning tree
     # pruneLearner = copy.deepcopy(learner)
