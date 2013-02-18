@@ -342,23 +342,6 @@ class DecisionTreeLearner(Learner):
         else:
             self.dt = self.short_tree_learning(dataset.examples, dataset.inputs, cutoff)
 
-    # def short_tree_learning(self, examples, attrs, cutoff, default=None):
-    #     if len(examples) == 0:
-    #         return DecisionTree(DecisionTree.LEAF, classification=default)
-    #     elif self.all_same_class(examples):
-    #         return DecisionTree(DecisionTree.LEAF,
-    #                             classification=examples[0].attrs[self.dataset.target])
-    #     elif  len(attrs) == 0 or cutoff == 1:
-    #         return DecisionTree(DecisionTree.LEAF, classification=self.majority_value(examples))
-    #     else:
-    #         best = self.choose_attribute(attrs, examples)
-    #         tree = DecisionTree(DecisionTree.NODE, attr=best, attrname=self.attrnames[best])
-    #         for (v, examples_i) in self.split_by(best, examples):
-    #             subtree = self.short_tree_learning(examples_i,
-    #               removeall(best, attrs), cutoff-1, self.majority_value(examples))
-    #             tree.add(v, subtree)
-    #         return tree
-
     def short_tree_learning(self, examples, attrs, cutoff, default=None):
         if len(examples) == 0:
             return DecisionTree(DecisionTree.LEAF, classification=default)
@@ -413,12 +396,6 @@ class DecisionTreeLearner(Learner):
            if e.attrs[target] != class0: return False
         return True
 
-    # def majority_value(self, examples):
-    #     """Return the most popular target value for this set of examples.
-    #     (If target is binary, this is the majority; otherwise plurality.)"""
-    #     g = self.dataset.target
-    #     return argmax(self.dataset.values[g],
-    #                   lambda v: self.count(g, v, examples))
 
     def majority_value(self, examples):
         """Return the most popular target value for this set of examples.
