@@ -151,8 +151,42 @@ def weightData(learner, dataset, alpha):
     for e in mydata.examples:
         e.weight = e.weight / s
 
+# wexample1 = Example([1,0,1,0,0])
+# wexample1.weight = 0.5
+# wexample2 = Example([1,0,0,0,1])
+# wexample2.weight = 0.1
+# wexample3 = Example([0,0,0,1,0])
+# wexample3.weight = 0.0
+# wexample4 = Example([1,0,0,1,1])
+# wexample4.weight = 0.1
+# wexample5 = Example([0,1,1,1,1])
+# wexample5.weight = 0.2
+# wexample6 = Example([1,1,0,1,0])
+# wexample6.weight = 0.1
+
+# wdataset = DataSet([wexample1,wexample2,wexample3,wexample4,wexample5,wexample6])
+
+# wxexample1 = Example([1,0,1,0,1])
+# wxexample1.weight = 0.1
+# wxexample2 = Example([1,0,0,0,0])
+# wxexample2.weight = 0.2
+# wxexample3 = Example([0,0,0,1,1])
+# wxexample3.weight = 0.3
+# wxexample4 = Example([1,0,0,1,0])
+# wxexample4.weight = 0.2
+# wxexample5 = Example([0,1,1,1,0])
+# wxexample5.weight = 0.1
+# wxexample6 = Example([1,1,0,1,1])
+# wxexample6.weight = 0.1
+
+# whalfdataset = DataSet([wxexample1,wxexample2,wxexample3,wexample4,wexample5,wexample6])
+
+# learned = DecisionTreeLearner()
+# learned.train(wdataset)
+# weightData(learned,whalfdataset,2)
+# print [e.weight for e in whalfdataset.examples]
+
 def boosting(dataset,numrounds,maxdepth):
-    "Performs boosting given the max depth of the tree and the number of rounds"
     learners = []
     mydata = copy.deepcopy(dataset)
     for i in xrange(numrounds):
@@ -169,7 +203,6 @@ def boosting(dataset,numrounds,maxdepth):
     return learners
 
 def splitData(dataset,size):
-    "Takes the data and randomly splits into two smaller ones based on 'size'"
     training = dataset.examples
     if size >= len(training):
         return [None,dataset]
@@ -182,30 +215,73 @@ def splitData(dataset,size):
         del training[num]
     return [DataSet(training,values=dataset.values),DataSet(validation,values=dataset.values)]
 
+# =========================
+# Testing for splitData
+# =========================
+
+# dataset2 = copy.deepcopy(dataset1)
+# dataset3 = copy.deepcopy(dataset1)
+# dataset4 = copy.deepcopy(dataset1)
+
+# splits1 = splitData(dataset2,1)
+# t1 = splits1[0].examples
+# v1 = splits1[1].examples
+# splits2 = splitData(dataset3,3)
+# t2 = splits2[0].examples
+# v2 = splits2[1].examples
+# splits3 = splitData(dataset4,5)
+# t3 = splits3[0].examples
+# v3 = splits3[1].examples
+
+# assert(len(t1) == 5)
+# assert(len(v1) == 1)
+# assert(len(t2) == 3)
+# assert(len(v2) == 3)
+# assert(len(t3) == 1)
+# assert(len(v3) == 5)
+# print [e.attrs for e in t2], [f.attrs for f in v2]
+
 def findEndNodes (tree, attrlist, attrlists, curAttr=None):
   "returns list of end nodes (nodes with only leaves attached) "
+  #attrlists.append(attrlist)
+  #print attrlists
   if tree.nodetype == DecisionTree.NODE:
-
+    #print tree.attr
     if curAttr != None:
       attrlist.append(curAttr)
-
+    #print attrlist
+    print 'node'
+    #print attrlists
+    print tree.branches.values()
     if every(lambda x: x.nodetype == DecisionTree.LEAF, tree.branches.values()):
+      print 'end node'
+      #print attrlist
+      #print attrlists
+      #holder = copy.deepcopy(attrlist)
       attrlists.append(attrlist)
     else:
+      print 'not end node'
+      print tree.branches.keys() 
       for a in tree.branches.keys():
-        cplist = copy.deepcopy(attrlist)
-        findEndNodes(tree.branches[a], cplist, attrlists, a)
+        findEndNodes(tree.branches[a], attrlist, attrlists, a)
   return attrlists
 
 def prune (learner, dataset):
-  "prunes a learner by looking at all the stumps until there is no more error decrease"
+
+  learner.dt.display()
+
   stumps = findEndNodes (learner.dt, [], [])
+
+  # print stumps
+
   for s in stumps:
     pLearner = copy.deepcopy(learner)
     pLearner.dt.collapse(s)
+    print scoreTree(pLearner, dataset)
+    print scoreTree(learner, dataset)
     if scoreTree(pLearner, dataset) >= scoreTree(learner, dataset):
-      return prune(pLearner, dataset)
-  return learner
+      print 'pruned'
+      return pLearner
 
 def main():
     arguments = validateInput(sys.argv)
@@ -221,10 +297,17 @@ def main():
 
     data = parse_csv(f.read(), " ")
     dataset = DataSet(data)
+
+    # print dataset.attrs
+    # print dataset.attrnames
+    # learner = DecisionTreeLearner()
+    # learner.train(dataset)
+    # print "original score", scoreTree(learner,dataset)
+    # learner.dt.display()
     
     # Copy the dataset so we have two copies of it
     examples = dataset.examples[:]
-
+ 
     dataset.examples.extend(examples)
     dataset.max_depth = maxDepth
     if boostRounds != -1:
@@ -247,187 +330,110 @@ def main():
     dataLength = len(examples)
     chunkLength = dataLength/fold
 
-    if pruneFlag == False:
+    # for each chunk, train on the remaining data and test on the chunk
+    # runningAverage = 0
+    # for i in range(fold):
+    #     learner = DecisionTreeLearner()
+    #     training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
 
-      # for each chunk, train on the remaining data and test on the chunk [ for unpruned Cross Validation]
-      runningAverage = 0
-      for i in range(fold):
-          learner = DecisionTreeLearner()
-          training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+        
+    #     testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+    #     learner.train(training)
 
-          
-          testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
-          learner.train(training)
-
-          runningAverage += scoreTree(learner, testing)
-      #print the average score
-      print "The average cross-validation score is", (runningAverage / fold)
+    #     runningAverage += scoreTree(learner, testing)
 
 
-      # =========================
-      # Pruning
-      # =========================
+   # =========================
+    # Pruning
+    # =========================
 
-    else: 
-      # keep track of scores for unpruned learner
-      runningAverageNP = 0
-
-      # keep track of scores for pruned learner
-      runningAverageP = 0
-      for i in range(fold):
-        # divide data into training, validation, and testing sets
+    runningAverage = 0
+    for i in range(fold):
         learner = DecisionTreeLearner()
-        training = DataSet(dataset.examples[(i*chunkLength):((i + fold - 1) * chunkLength - valSetSize)], values=dataset.values)
-        validation = DataSet(dataset.examples[((i + fold - 1) * chunkLength - valSetSize): (i+fold-1)*chunkLength])
+        training = DataSet(dataset.examples[(i*chunkLength):((i+fold-1)*chunkLength]-, values=dataset.values)
+        
+        
         testing = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
         learner.train(training)
 
-        # print 'learner'
-        # learner.dt.display()
-        
-        plearner = prune(learner, validation)
-        # print 'pruned learner'
-        # plearner.dt.display()
+        runningAverage += scoreTree(learner, testing)
 
-        runningAverageNP += scoreTree(learner, testing)
-        runningAverageP += scoreTree(plearner, testing)
+    # make pruning tree
+    # pruneLearner = copy.deepcopy(learner)
 
-      print "The average cross-validated score without pruning is:", (runningAverageNP/fold)
-      print "The average cross-validated score with pruning is:", (runningAverageP/fold)
+    #prune(pruneLearner, learner)
+    # learner.dt.display()
 
-      # =========================
-      # Validation Set Pruning Graphs
-      # =========================
+    #     # prune(pruneLearner, learner)
 
-      # 2bi
+    #     runningAverage += scoreTree(learner, validation)
 
-    # file1 = open("noisy.csv")
-
-    # dataNoisy = parse_csv(file1.read(), " ")
-    # datasetN = DataSet(dataNoisy)
-
-    # examplesN = datasetN.examples[:]
-
-    # datasetN.examples.extend(examplesN)
-    # datasetN.max_depth = maxDepth
-
-    # file2 = open("data.csv")
-
-    # dataFull = parse_csv(file2.read(), " ")
-    # datasetF = DataSet(dataFull)
-
-    # examplesF = datasetF.examples[:]
-
-    # datasetF.examples.extend(examplesF)
-    # datasetF.max_depth = maxDepth
-
-    # Plist = []
-    # NPlist = []
-    # for valsize in range(1,81):
-    #   NPcount = 0
-    #   # keep track of scores for pruned learner
-    #   Pcount = 0
-    #   for i in range(fold):
-    #     # divide data into training, validation, and testing sets
+    # for each chunk, train on the remaining data and test on the chunk
+    # runningAverage = 0
+    # for i in range(fold):
     #     learner = DecisionTreeLearner()
-    #     training = DataSet(datasetF.examples[(i*chunkLength):((i + fold - 1) * chunkLength - valsize)], values=datasetF.values)
-    #     validation = DataSet(datasetF.examples[((i + fold - 1) * chunkLength - valsize): (i+fold-1)*chunkLength])
-    #     testing = DataSet(datasetF.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+    #     training = DataSet(dataset.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset.values)
+    #     validation = DataSet(dataset.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
     #     learner.train(training)
-        
-    #     plearner = prune(learner, validation)
+    #     print "score", scoreTree(learner, validation)
+    #     runningAverage += scoreTree(learner, validation)
 
-    #     NPcount += scoreTree(learner, testing)
-    #     Pcount += scoreTree(plearner, testing)
+    # # print the average score
+    # print "The average cross-validation score is", (runningAverage / fold)
 
-    #   NPavg = NPcount/fold
-    #   Pavg = Pcount/fold
+    # =========================
+    # Validation Set Pruning
+    # =========================
 
-    #   NPlist.append(NPavg)
-    #   Plist.append(Pavg)
-
-    # PlistN = []
-    # NPlistN = []
-    # for valsize in range(1,81):
-    #   NPcount = 0
-    #   # keep track of scores for pruned learner
-    #   Pcount = 0
-    #   for i in range(fold):
-    #     # divide data into training, validation, and testing sets
-    #     learner = DecisionTreeLearner()
-    #     training = DataSet(datasetN.examples[(i*chunkLength):((i + fold - 1) * chunkLength - valsize)], values=datasetN.values)
-    #     validation = DataSet(datasetN.examples[((i + fold - 1) * chunkLength - valsize): (i+fold-1)*chunkLength])
-    #     testing = DataSet(datasetN.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
-    #     learner.train(training)
-        
-    #     plearner = prune(learner, validation)
-
-    #     NPcount += scoreTree(learner, testing)
-    #     Pcount += scoreTree(plearner, testing)
-
-    #   NPavg = NPcount/fold
-    #   Pavg = Pcount/fold
-
-    #   NPlistN.append(NPavg)
-    #   PlistN.append(Pavg)
+    # if pruneFlag == True:
 
 
-    # plt.clf()
-    # xs = range(1, 81)
-    # ys = Plist
-    # ys2 = NPlist
-    # # ys3 = PlistN
-    # # ys4 = NPlistN
-    # p1, = plt.plot(xs, ys, color='b')
-    # p2, = plt.plot(xs, ys2, color='r')
-    # # p3, = plt.plot(xs, ys3, color='g')
-    # # p4, = plt.plot(xs, ys4, color='r')
-    # plt.title('Pruning: Cross Validation Performance vs Validation Set Size (Full Dataset) ')
-    # plt.xlabel('Validation Set Size')
-    # plt.ylabel('Cross Validation Performance')
-    # plt.axis([0, 90, 0.6, 1])
-    # # plt.legend((p1,), ('pruned',), 'lower right')
-    # plt.legend((p1,p2), ('pruned','not pruned'), 'lower right')
-    # # plt.legend((p1,p3), ('full data','noisy data'), 'lower right')
-    # # plt.legend((p3,p4), ('pruned','not pruned'), 'lower right')
-    # savefig('figure.pdf') # save the figure to a file
-    # plt.show() # show the figure
+        plt.clf()
+        xs = range(5)
+        ys = [3, 5, 1, 10, 8]
+        p1 = plt.plot(xs, ys, color='b')
+        plt.title('sample graph')
+        plt.xlabel('x-coordinate')
+        plt.ylabel('y-coordinate')
+        plt.axis([0, 4, 0, 12])
+        # prune(learner, dataset)
 
-    # # ========
-    # # AdaBoost
-    # # ========
+
+    # ========
+    # AdaBoost
+    # ========
     
-    # # Divide data into chunks
+    # Divide data into chunks
 
-    # dataLength = len(examples)
-    # chunkLength = dataLength/fold
+    dataLength = len(examples)
+    chunkLength = dataLength/fold
 
-    # if boostRounds > 0 and maxDepth > 0:
+    if boostRounds > 0 and maxDepth > 0:
 
-    #     if chunkLength >= len(examples):
-    #         print "Please make sure your validation set size is smaller than your data set"
+        if chunkLength >= len(examples):
+            print "Please make sure your validation set size is smaller than your data set"
 
-    #     else:
-    #         myexamples = copy.deepcopy(examples)
+        else:
+            myexamples = copy.deepcopy(examples)
+            # weight the data so that they all add to one
+            for e in myexamples:
+                e.weight = 1.0/len(myexamples)
 
-    #         # weight the data so that they all add to one
-    #         for e in myexamples:
-    #             e.weight = 1.0/len(myexamples)
+            dataset2 = DataSet(myexamples)
+            dataset2.examples.extend(myexamples)
 
-    #         dataset2 = DataSet(myexamples)
-    #         dataset2.examples.extend(myexamples)
+            # keep track of the score for each validation 
+            runningAverage = 0
+            for i in range(fold):
+                learner = DecisionTreeLearner()
+                training = DataSet(dataset2.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset2.values)
+                validation = DataSet(dataset2.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
+                # get all the weak learners
+                learners = boosting(training, boostRounds, maxDepth)
+                runningAverage += scoreWeakTrees(learners, validation)
 
-    #         # keep track of the score for each validation 
-    #         runningAverage = 0
-    #         for i in range(fold):
-    #             learner = DecisionTreeLearner()
-    #             training = DataSet(dataset2.examples[(i*chunkLength):(i+fold-1)*chunkLength], values=dataset2.values)
-    #             validation = DataSet(dataset2.examples[(i+fold-1)*chunkLength:(i+fold)*chunkLength])
-    #             # get all the weak learners
-    #             learners = boosting(training, boostRounds, maxDepth)
-    #             runningAverage += scoreWeakTrees(learners, validation)
-
-    #         print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/fold
+            print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",runningAverage/fold
+            # print "The score for the AdaBoost algorithm with",boostRounds, "rounds and a max depth of",maxDepth, "is",scoreWeakTrees(learners, validation)
 
     # =========================================================================
     # Graphing Boosting for a range of round-sizes for noisy and non-noisy data
@@ -506,9 +512,6 @@ def main():
     # plt.legend([p1,p2], ['non-noisy','noisy'], 'lower right')
     # savefig('figure.jpg') # save the figure to a file
     # plt.show() # show the figure
-
-
-
 
 
     # =======================================================================

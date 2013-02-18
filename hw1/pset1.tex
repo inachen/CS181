@@ -66,10 +66,25 @@ Ina Chen and Kathy Lin
 			\item The average ten-fold cross-validation score for the non-noisy data is 0.87 while the score for noise data is 0.78.
 			\item 
 				\begin{enumerate}
-					\item
-					\item
-					\item
-					\item 
+					\item Graph for comparing cross-validation performance over different validation set sizes [1,80]\\
+						\begin{figure}[H]
+							\begin{center}
+							\includegraphics[width=130mm]{2bi.png}
+							\end{center}
+						\end{figure}
+					\item The cross-validation performance was lower for very large or very small validation sets with the performance best at a validation size of around 20 for the full dataset and around 12 for the noisy dataset. The general trend of performance is that it increases from the extreme sizes towards the best performing validation set size ($\sim$19)
+					\item As shown in the graph below, for the full dataset, validation set pruning did not improve or slightly to moderately decreased the cross-validation set performance for larger ($>$ 40) or smaller ($<$10 ) validation set sizes. For the sizes of around 10 to 40, validation set pruning did improve the cross-validation set performance though the improvement is slight. For the noisy dataset, validation set pruning made higher improvements on the cross-validation performance than for the full dataset. This made sense since spurious irrelevant patterns would be more common if there were noise in the data. However, the improvement is still small\\
+					\begin{figure}[H]
+							\begin{center}
+							\includegraphics[width=130mm]{2biii1.png}
+							\end{center}
+						\end{figure}
+						\begin{figure}[H]
+							\begin{center}
+							\includegraphics[width=130mm]{2biii2.png}
+							\end{center}
+						\end{figure}
+					\item Overfitting is an issue for these data, though not a big issue. Overfitting happens when we have a decision tree that is too specific for the training data and fails to generalize to when being tested. Pruning is a technique to prevent overfitting by pruning away the latter branches that are usually more due to spurious patterns than true patterns. While pruning does improve cross-validation performance in the effective ranges ($\sim$10-40), indicating that there is some overfitting, but not too much.
 				\end{enumerate}
 		\end{enumerate}
 
@@ -112,7 +127,13 @@ Ina Chen and Kathy Lin
 						\end{figure}
 				\end{enumerate}
 		\end{enumerate}
-	\item We chose
+	\item The following tree was made with the full dataset (total 100 instances) where 71 instances of the data was used for training, 19 instances used for validation-set pruning, and the final decision tree was tested on 10 instances. The model had a score of 1.0 when against the testing set\\
+	\begin{figure}[H]
+	\begin{center}
+	\includegraphics[width=110mm]{4.jpg}
+	\end{center}
+	\end{figure}
+From this tree, we can see that uniformity of cell shape (attribute 2) is the most important attribute in classifying benign vs malignant tumors. In addition, normal nucleoli (attribute 7) and clumping thickness (attribute 0) are also helpful in distinguishing between benign and malignant tumors.
 
 \end{enumerate}
 \end{document}

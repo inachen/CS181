@@ -293,24 +293,17 @@ class DecisionTree:
         self.branches[val] = subtree
         return self
 
+    # collapses a "stump" into a leaf with the majority classification
     def collapse(self, attrlist):
         "Collapses the node with the given location"
         if attrlist == []:
             classlist = []
-            #self.display()
-            #clist = self.branches.values()
-            #print clist[0].classification
-            #print self.branches[1]
             for c in self.branches.values():
                 classlist.append(c.classification)
             self.nodetype = DecisionTree.LEAF
-            # print mode(classlist)
             self.classification = mode(classlist)
         else:
             attr = attrlist.pop(0)
-            # print attr
-            # print attrlist
-            # #print self.branches
             self.branches[attr].collapse(attrlist)
 
     def display(self, indent=0):
