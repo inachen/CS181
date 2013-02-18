@@ -103,7 +103,7 @@ Ina Chen and Kathy Lin
 						\end{center}
 						\end{figure}
 						
-					\item 
+					\item The average performance for boosting reaches a maximum average accuracy of about 0.94 after 10 rounds of boosting as a opposed to a maximum average accuracy of about 0.91 for pruning with a validation set size of 23. Both of these are an improvement over ID3 without pruning, which has a maximum average accuracy of about 0.87. So on this particular non-noisy dataset, pruning is a moderate improvement over un-pruned ID3 and boosting is a moderate improvement over pruned trees.
 					\item The algorithm improves with more rounds of boosting both on the training and on the test data. The performance on the test data continues to improve a bit after the performance on the training data plateaus at zero error. This is expected because each individual tree only splits once and thus avoids splitting on an attribute that is not actually important. Because of this, each additional tree does not mold the algorithm to the small nuances of the training data and the algorithm avoids overfitting.
 						\begin{figure}[H]
 						\begin{center}

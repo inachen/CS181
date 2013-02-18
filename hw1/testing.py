@@ -102,6 +102,9 @@ import sys
 # assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example1) == 1)
 # assert(vote([[learned,0.5],[xlearned,0.5],[halflearned,0.5]], example5) == 1)
 
+
+
+
 # # =========================
 # # Testing for weightHyp
 # # =========================
@@ -114,6 +117,9 @@ import sys
 # assert(weightHyp(learned, wdataset) == sys.maxint)
 # assert(weightHyp(learned, wxdataset) == 0)
 # assert(abs(weightHyp(learned, whalfdataset) - 0.5 * math.log((0.4)/0.6)) < 0.0001)
+
+
+
 
 # # =========================
 # # Testing for weightData
@@ -131,6 +137,9 @@ import sys
 # assert(abs(wexample4.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
 # assert(abs(wexample5.weight - 0.2*math.exp(-1.5)/2.778265506) < 0.00001)
 # assert(abs(wexample6.weight - 0.1*math.exp(-1.5)/2.778265506) < 0.00001)
+
+
+
 
 # # =========================
 # # Testing for splitData
@@ -157,6 +166,8 @@ import sys
 # assert(len(t3) == 1)
 # assert(len(v3) == 5)
 # #print [e.attrs for e in t2], [f.attrs for f in v2]
+
+
 
 
 # # ===================================
