@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  17 FEB 2013 23:07
 entering extended mode
  restricted \write18 enabled.
+=======
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  17 FEB 2013 23:17
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+>>>>>>> pset2
  %&-line parsing enabled.
 **pset1.tex
 (./pset1.tex
@@ -363,7 +370,11 @@ Here is how much of TeX's memory you used:
  5739 multiletter control sequences out of 15000+200000
  8603 words of font info for 35 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
+<<<<<<< HEAD
  37i,8n,24p,679b,493s stack positions out of 5000i,500n,10000p,200000b,50000s
+=======
+ 37i,10n,24p,679b,493s stack positions out of 5000i,500n,10000p,200000b,50000s
+>>>>>>> pset2
 </usr/local/texlive/2012/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2012/texmf-
 dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2012/texmf-di
@@ -371,7 +382,11 @@ st/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2012/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmsy8.pfb>
+<<<<<<< HEAD
 Output written on pset1.pdf (8 pages, 377029 bytes).
+=======
+Output written on pset1.pdf (8 pages, 375324 bytes).
+>>>>>>> pset2
 PDF statistics:
  67 PDF objects out of 1000 (max. 8388607)
  39 compressed objects within 1 object stream
