@@ -39,10 +39,21 @@ def FeedForward(network, input):
   network.inputs[i].raw_value = input[i]
   """
   network.CheckComplete()
+  numInputs = len(input.values)
   # 1) Assign input values to input nodes
+  for i in range(numInputs):
+    network.inputs[i].raw_value = input.values[i]
+    network.hidden_nodes[i].transformed_value = input.values[i]
   # 2) Propagates to hidden layer
+  for i in range(len(network.hidden_nodes)):
+    raw = ComputeRawValue(network.hidden_nodes[i])
+    network.hidden_nodes[i].raw_value = raw
+    network.hidden_nodes[i].transformed_value = Sigmoid(raw)
   # 3) Propagates to the output layer
-  pass
+  for i in range(len(network.outputs)):
+    raw = ComputeRawValue(network.outputs[i])
+    network.outputs[i].raw_value = raw
+    network.outputs[i].transformed_value = Sigmoid(raw)
 
 #< --- Problem 3, Question 2
 
@@ -88,7 +99,9 @@ def Backprop(network, input, target, learning_rate):
   """
   network.CheckComplete()
   # 1) We first propagate the input through the network
+  FeedForward(network,input)
   # 2) Then we compute the errors and update the weigths starting with the last layer
+  
   # 3) We now propagate the errors to the hidden layer, and update the weights there too
   pass
 
