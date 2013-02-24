@@ -119,6 +119,7 @@ def Backprop(network, input, target, learning_rate):
     delta_out.append(e * s * (1 - s))
 
   # 3) We now propagate the errors to the hidden layer, and update the weights there too
+
   for h in len(network.hidden_nodes):
     e = 0
     s = network.hidden_nodes[h].transformed_value
@@ -140,7 +141,6 @@ def Backprop(network, input, target, learning_rate):
       alpha = learning_rate
       delta = delta_hidden[w]
       network.inputs[i].forward_weights[w] = network.inputs[i].forward_weights[w] + alpha * s * delta
-
 
 # <--- Problem 3, Question 3 --->
 
@@ -164,7 +164,10 @@ def Train(network, inputs, targets, learning_rate, epochs):
   run the *Backprop* over the training set *epochs*-times
   """
   network.CheckComplete()
-  pass
+
+  for i in epochs:
+    for j in len(inputs):
+      Backprop(network, inputs[j], targets[j], learning_rate)
   
 
 
