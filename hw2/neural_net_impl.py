@@ -111,7 +111,7 @@ def Backprop(network, input, target, learning_rate):
   delta_hidden = []
 
   # 2) Then we compute the errors and update the weigths starting with the last layer
-  for o in len(network.outputs):
+  for o in range(len(network.outputs)):
     y = target[o]
     s = network.outputs[o].transformed_value
     e = y - s
@@ -120,23 +120,23 @@ def Backprop(network, input, target, learning_rate):
 
   # 3) We now propagate the errors to the hidden layer, and update the weights there too
 
-  for h in len(network.hidden_nodes):
+  for h in range(len(network.hidden_nodes)):
     e = 0
     s = network.hidden_nodes[h].transformed_value
-    for child in len(network.hidden_nodes[h].forward_neighbors):
+    for child in range(len(network.hidden_nodes[h].forward_neighbors)):
       e += network.hidden_nodes[h].forward_weights[child] * delta_out[h]
     error_hidden.append(e)
     delta_hidden.append(e * s * (1 - s))
 
   # update weights
-  for h in len(network.hidden_nodes):
-    for w in len(network.hidden_nodes[h].forward_weights):
+  for h in range(len(network.hidden_nodes)):
+    for w in range(len(network.hidden_nodes[h].forward_weights)):
       s = network.outputs[w].transformed_value
       alpha = learning_rate
       delta = delta_out[w]
       network.hidden_nodes[h].forward_weights[w] = network.hidden_nodes[h].forward_weights[w] + alpha * s * delta
-  for i in len(network.inputs):
-    for w in len(network.inputs[i].forward_weights):
+  for i in range(len(network.inputs)):
+    for w in range(len(network.inputs[i].forward_weights)):
       s = network.hidden_nodes[w].transformed_value
       alpha = learning_rate
       delta = delta_hidden[w]
@@ -187,7 +187,7 @@ class EncodedNetworkFramework(NetworkFramework):
     """
     Arguments:
     ---------
-    label: a number between 0 and 9
+    label: a number between 0 and 9 (ARE THESE INTS??!!)
 
     Returns:
     ---------
@@ -209,7 +209,9 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # Replace line below by content of function
-    raise NotImplementedError
+    array = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    array[label] = float(label)
+    return array
 
   def GetNetworkLabel(self):
     """
@@ -239,7 +241,9 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # Replace line below by content of function
-    raise NotImplementedError
+    lst = self.network.outputs
+    label = lst.index(max(lst))
+    return label
 
   def Convert(self, image):
     """
@@ -263,7 +267,17 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # Replace line below by content of function
-    raise NotImplementedError
+    # function goes through image pixels first through rows then through columns
+    dim = 14
+    assert (dim * dim = len(image.pixels)), "dimension mismatch"
+
+    inputs = Input()
+
+    for i in range(dim):
+      for j in range(dim):
+        inputs.values.append(image.pixels[i][j])
+
+    return inputs
 
   def InitializeWeights(self):
     """
@@ -286,9 +300,11 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # replace line below by content of function
-    pass
+    for weight in self.network.weights
+      weight.value = random.uniform(-0.01, 0.01)
 
-
+# Problem 3, Q5: Since our output values are between 0 and 1, normalizing the input values
+# prevents us from having to normalize in later functions
 
 #<--- Problem 3, Question 6 --->
 
