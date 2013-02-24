@@ -43,6 +43,9 @@ def FeedForward(network, input):
   # 1) Assign input values to input nodes
   for i in range(numInputs):
     network.inputs[i].raw_value = input.values[i]
+    ###################################################################################################
+    #### you sure this isn't nodes.inputs[i].transformed_value as neural_net seem to imply?       #####
+    ###################################################################################################
     network.hidden_nodes[i].transformed_value = input.values[i]
   # 2) Propagates to hidden layer
   for i in range(len(network.hidden_nodes)):
@@ -98,12 +101,46 @@ def Backprop(network, input, target, learning_rate):
   
   """
   network.CheckComplete()
+
   # 1) We first propagate the input through the network
   FeedForward(network,input)
+
+  error_out = []
+  delta_out = []
+  error_hidden = []
+  delta_hidden = []
+
   # 2) Then we compute the errors and update the weigths starting with the last layer
-  
+  for o in len(network.outputs):
+    y = target[o]
+    s = network.outputs[o].transformed_value
+    e = y - s
+    error_out.append(e)
+    delta_out.append(e * s * (1 - s))
+
   # 3) We now propagate the errors to the hidden layer, and update the weights there too
-  pass
+  for h in len(network.hidden_nodes):
+    e = 0
+    s = network.hidden_nodes[h].transformed_value
+    for child in len(network.hidden_nodes[h].forward_neighbors):
+      e += network.hidden_nodes[h].forward_weights[child] * delta_out[h]
+    error_hidden.append(e)
+    delta_hidden.append(e * s * (1 - s))
+
+  # update weights
+  for h in len(network.hidden_nodes):
+    for w in len(network.hidden_nodes[h].forward_weights):
+      s = network.outputs[w].transformed_value
+      alpha = learning_rate
+      delta = delta_out[w]
+      network.hidden_nodes[h].forward_weights[w] = network.hidden_nodes[h].forward_weights[w] + alpha * s * delta
+  for i in len(network.inputs):
+    for w in len(network.inputs[i].forward_weights):
+      s = network.hidden_nodes[w].transformed_value
+      alpha = learning_rate
+      delta = delta_hidden[w]
+      network.inputs[i].forward_weights[w] = network.inputs[i].forward_weights[w] + alpha * s * delta
+
 
 # <--- Problem 3, Question 3 --->
 
