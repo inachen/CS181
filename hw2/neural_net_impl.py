@@ -402,8 +402,26 @@ class HiddenNetwork(EncodedNetworkFramework):
     super(HiddenNetwork, self).__init__() # < Don't remove this line >
 
     # 1) Adds an input node for each pixel
+    # from above
+    DIM = 14
+    DIGITS = 10
+    newinputs = []
+    for i in range(DIM*DIM):
+      newin = Node()
+      newinputs.append(newin)
+      self.network.AddNode(newin,self.network.INPUT)
     # 2) Adds the hidden layer
+    # needs to finish
+    for i in range(DIM*DIM):
+      newin = Node()
+      newinputs.append(newin)
+      self.network.AddNode(newin,self.network.INPUT)
     # 3) Adds an output node for each possible digit label.
+    for j in range(DIGITS):
+      newout = Node()
+      for k in range(DIM*DIM):
+        newout.AddInput(newinputs[k],None,self.network)
+      self.network.AddNode(newout,self.network.OUTPUT)
     pass
     
 
