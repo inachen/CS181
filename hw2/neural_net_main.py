@@ -39,7 +39,7 @@ def main():
 
   # Load in the training data.
   images = DataReader.GetImages('training-9k.txt', -1)
-  for image in images:
+  for image in images[1:10]:
     assert len(image.pixels) == 14
     assert len(image.pixels[0]) == 14
 
@@ -65,8 +65,6 @@ def main():
   # Initialize network weights
   network.InitializeWeights()
 
-  print [n.value for n in network.network.weights]
-  
 
   # Displays information
   print '* * * * * * * * *'

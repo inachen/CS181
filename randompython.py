@@ -1,2 +1,1 @@
-import random
-print random.uniform(-0.01, 0.01)
+from neural_net_impl.py import *

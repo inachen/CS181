@@ -40,6 +40,7 @@ def FeedForward(network, input):
   """
   network.CheckComplete()
   numInputs = len(input.values)
+  #print input.values
   # 1) Assign input values to input nodes
   for i in range(numInputs):
     network.inputs[i].raw_value = input.values[i]
@@ -54,6 +55,8 @@ def FeedForward(network, input):
     raw = NeuralNetwork.ComputeRawValue(network.outputs[i])
     network.outputs[i].raw_value = raw
     network.outputs[i].transformed_value = NeuralNetwork.Sigmoid(raw)
+
+  #print network.outputs[3].raw_value
 
 #< --- Problem 3, Question 2
 
@@ -100,7 +103,7 @@ def Backprop(network, input, target, learning_rate):
   network.CheckComplete()
 
   # 1) We first propagate the input through the network
-  FeedForward(network,input)
+  #FeedForward(network,input)
 
   error_out = []
   delta_out = []
@@ -123,7 +126,10 @@ def Backprop(network, input, target, learning_rate):
     delta_out.append(delta)
     for m in range(len(myoutput.inputs)):
       myoutput.weights[m].value = myoutput.weights[m].value + (learning_rate*myoutput.inputs[m].transformed_value*delta)
-
+      # print (learning_rate*myoutput.inputs[m].transformed_value*delta)
+      # print "1", myoutput.inputs[m].transformed_value
+      # print "inputblargh", network.inputs[m].transformed_value
+      #print "2", delta
   # 3) We now propagate the errors to the hidden layer, and update the weights there too
 
   for j in range(len(network.hidden_nodes)):
@@ -133,6 +139,9 @@ def Backprop(network, input, target, learning_rate):
     delta = e * s * (1 - s)
     for m in range(len(mynode.inputs)):
       mynode.weights[m].value = mynode.weights[m].value + (learning_rate*mynode.inputs[m].transformed_value*delta)
+      print (learning_rate*mynode.inputs[m].transformed_value*delta)
+      
+
 
   # for h in range(len(network.hidden_nodes)):
   #   e = 0
@@ -182,10 +191,32 @@ def Train(network, inputs, targets, learning_rate, epochs):
   """
   network.CheckComplete()
 
+  print "hi"
+
+  first = [n.value for n in network.weights]
+  print first[23]
+  second = []
+
+  print "input", network.outputs[2].raw_value
+
   for i in range(epochs):
+    print "weight", network.weights[23].value
+
     for j in range(len(inputs)):
-      ###### Are you sure you want inputs[j] instead of just inputs?
+      FeedForward(network,inputs[j])
       Backprop(network, inputs[j], targets[j], learning_rate)
+      if j == 0:
+        first = [n.value for n in network.weights]
+      if j == 1:
+        second = [n.value for n in network.weights]
+
+  print "input2", network.outputs[2].raw_value
+
+
+  #print (map(lambda n: first[n] - second[n], range[30]))
+  print first[23]
+  print second[23]
+
   
 
 
@@ -362,7 +393,7 @@ class SimpleNetwork(EncodedNetworkFramework):
     for j in range(DIGITS):
       newout = Node()
       for k in range(DIM*DIM):
-        newout.AddInput(newinputs[i],None,self.network)
+        newout.AddInput(newinputs[k],None,self.network)
       self.network.AddNode(newout,self.network.OUTPUT)
 
 
