@@ -1,3 +1,4 @@
-import random
+x = None
 
-print random.uniform(-0.01, 0.01)
+if x:
+	print "hi"

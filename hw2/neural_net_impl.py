@@ -49,14 +49,14 @@ def FeedForward(network, input):
     network.inputs[i].transformed_value = input.values[i]
   # 2) Propagates to hidden layer
   for i in range(len(network.hidden_nodes)):
-    raw = ComputeRawValue(network.hidden_nodes[i])
+    raw = NeuralNetwork.ComputeRawValue(network.hidden_nodes[i])
     network.hidden_nodes[i].raw_value = raw
-    network.hidden_nodes[i].transformed_value = Sigmoid(raw)
+    network.hidden_nodes[i].transformed_value = NeuralNetwork.Sigmoid(raw)
   # 3) Propagates to the output layer
   for i in range(len(network.outputs)):
-    raw = ComputeRawValue(network.outputs[i])
+    raw = NeuralNetwork.ComputeRawValue(network.outputs[i])
     network.outputs[i].raw_value = raw
-    network.outputs[i].transformed_value = Sigmoid(raw)
+    network.outputs[i].transformed_value = NeuralNetwork.Sigmoid(raw)
 
 #< --- Problem 3, Question 2
 
@@ -129,18 +129,22 @@ def Backprop(network, input, target, learning_rate):
     delta_hidden.append(e * s * (1 - s))
 
   # update weights
+  ####### might be better to use weights instead of forward weights in the case of simple networks
   for h in range(len(network.hidden_nodes)):
     for w in range(len(network.hidden_nodes[h].forward_weights)):
+      print "w", w
       s = network.outputs[w].transformed_value
       alpha = learning_rate
       delta = delta_out[w]
       network.hidden_nodes[h].forward_weights[w] = network.hidden_nodes[h].forward_weights[w] + alpha * s * delta
   for i in range(len(network.inputs)):
     for w in range(len(network.inputs[i].forward_weights)):
+      print "w", w
       s = network.hidden_nodes[w].transformed_value
       alpha = learning_rate
       delta = delta_hidden[w]
       network.inputs[i].forward_weights[w] = network.inputs[i].forward_weights[w] + alpha * s * delta
+  
 
 # <--- Problem 3, Question 3 --->
 
@@ -165,8 +169,9 @@ def Train(network, inputs, targets, learning_rate, epochs):
   """
   network.CheckComplete()
 
-  for i in epochs:
-    for j in len(inputs):
+  for i in range(epochs):
+    for j in range(len(inputs)):
+      ###### Are you sure you want inputs[j] instead of just inputs?
       Backprop(network, inputs[j], targets[j], learning_rate)
   
 
@@ -244,7 +249,7 @@ class EncodedNetworkFramework(NetworkFramework):
     """
     # Replace line below by content of function
     lst = map(lambda node: node.transformed_value, self.network.outputs)
-      label = lst.index(max(lst))
+    label = lst.index(max(lst))
     return label
 
   def Convert(self, image):
@@ -271,13 +276,13 @@ class EncodedNetworkFramework(NetworkFramework):
     # Replace line below by content of function
     # function goes through image pixels first through rows then through columns
     dim = 14
-    assert (dim * dim = len(image.pixels)), "dimension mismatch"
+    assert (dim == len(image.pixels)), "dimension mismatch"
 
     inputs = Input()
 
     for i in range(dim):
       for j in range(dim):
-        newpixel = float(image.pixel[i][j]/256.0)
+        newpixel = float(image.pixels[i][j]/256.0)
         inputs.values.append(newpixel)
 
     return inputs
@@ -303,7 +308,7 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # replace line below by content of function
-    for weight in self.network.weights
+    for weight in self.network.weights:
       weight.value = random.uniform(-0.01, 0.01)
 
 # Problem 3, Q5: Since our output values are between 0 and 1, normalizing the input values
@@ -330,9 +335,24 @@ class SimpleNetwork(EncodedNetworkFramework):
     """
     super(SimpleNetwork, self).__init__() # < Don't remove this line >
     
-    # 1) Adds an input node for each pixel.    
+    # 1) Adds an input node for each pixel. 
+    # defines the dimensions of the image
+    DIM = 14
+    DIGITS = 10
+    newinputs = []
+    for i in range(DIM*DIM):
+      newin = Node()
+      newinputs.append(newin)
+      self.network.AddNode(newin,self.network.INPUT)
+
     # 2) Add an output node for each possible digit label.
-    pass
+    for j in range(DIGITS):
+      newout = Node()
+      for k in range(DIM*DIM):
+        newout.AddInput(newinputs[i],None,self.network)
+      self.network.AddNode(newout,self.network.OUTPUT)
+
+
 
 
 #<---- Problem 3, Question 7 --->
