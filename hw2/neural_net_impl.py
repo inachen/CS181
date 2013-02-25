@@ -46,7 +46,7 @@ def FeedForward(network, input):
     ###################################################################################################
     #### you sure this isn't nodes.inputs[i].transformed_value as neural_net seem to imply?       #####
     ###################################################################################################
-    network.hidden_nodes[i].transformed_value = input.values[i]
+    network.inputs[i].transformed_value = input.values[i]
   # 2) Propagates to hidden layer
   for i in range(len(network.hidden_nodes)):
     raw = ComputeRawValue(network.hidden_nodes[i])
@@ -209,8 +209,10 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # Replace line below by content of function
+    assert(isinstance(label,int)), "label must be an integer"
+    assert(label > -1 and label < 10), "label must be between 0 and 9"
     array = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    array[label] = float(label)
+    array[label] = float(1)
     return array
 
   def GetNetworkLabel(self):
@@ -241,8 +243,8 @@ class EncodedNetworkFramework(NetworkFramework):
     
     """
     # Replace line below by content of function
-    lst = self.network.outputs
-    label = lst.index(max(lst))
+    lst = map(lambda node: node.transformed_value, self.network.outputs)
+      label = lst.index(max(lst))
     return label
 
   def Convert(self, image):
@@ -275,7 +277,8 @@ class EncodedNetworkFramework(NetworkFramework):
 
     for i in range(dim):
       for j in range(dim):
-        inputs.values.append(image.pixels[i][j])
+        newpixel = float(image.pixel[i][j]/256.0)
+        inputs.values.append(newpixel)
 
     return inputs
 
