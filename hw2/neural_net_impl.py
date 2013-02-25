@@ -126,10 +126,6 @@ def Backprop(network, input, target, learning_rate):
     delta_out.append(delta)
     for m in range(len(myoutput.inputs)):
       myoutput.weights[m].value = myoutput.weights[m].value + (learning_rate*myoutput.inputs[m].transformed_value*delta)
-      # print (learning_rate*myoutput.inputs[m].transformed_value*delta)
-      # print "1", myoutput.inputs[m].transformed_value
-      # print "inputblargh", network.inputs[m].transformed_value
-      #print "2", delta
   # 3) We now propagate the errors to the hidden layer, and update the weights there too
 
   for j in range(len(network.hidden_nodes)):
@@ -139,7 +135,6 @@ def Backprop(network, input, target, learning_rate):
     delta = e * s * (1 - s)
     for m in range(len(mynode.inputs)):
       mynode.weights[m].value = mynode.weights[m].value + (learning_rate*mynode.inputs[m].transformed_value*delta)
-      print (learning_rate*mynode.inputs[m].transformed_value*delta)
       
 
 
@@ -191,17 +186,7 @@ def Train(network, inputs, targets, learning_rate, epochs):
   """
   network.CheckComplete()
 
-  print "hi"
-
-  first = [n.value for n in network.weights]
-  print first[23]
-  second = []
-
-  print "input", network.outputs[2].raw_value
-
   for i in range(epochs):
-    print "weight", network.weights[23].value
-
     for j in range(len(inputs)):
       FeedForward(network,inputs[j])
       Backprop(network, inputs[j], targets[j], learning_rate)
@@ -209,13 +194,6 @@ def Train(network, inputs, targets, learning_rate, epochs):
         first = [n.value for n in network.weights]
       if j == 1:
         second = [n.value for n in network.weights]
-
-  print "input2", network.outputs[2].raw_value
-
-
-  #print (map(lambda n: first[n] - second[n], range[30]))
-  print first[23]
-  print second[23]
 
   
 
