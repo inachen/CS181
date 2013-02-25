@@ -415,7 +415,7 @@ class HiddenNetwork(EncodedNetworkFramework):
     for i in range(DIM*DIM):
       newin = Node()
       newinputs.append(newin)
-      self.network.AddNode(newin,self.network.INPUT)
+      self.network.AddNode(newin,self.network.HIDDEN)
     # 3) Adds an output node for each possible digit label.
     for j in range(DIGITS):
       newout = Node()
