@@ -64,6 +64,8 @@ def main():
 
   # Initialize network weights
   network.InitializeWeights()
+
+  print [n.value for n in network.network.weights]
   
 
   # Displays information
