@@ -56,7 +56,7 @@ def FeedForward(network, input):
     network.outputs[i].raw_value = raw
     network.outputs[i].transformed_value = NeuralNetwork.Sigmoid(raw)
 
-  #print network.outputs[3].raw_value
+  #  network.outputs[3].raw_value
 
 #< --- Problem 3, Question 2
 
@@ -406,21 +406,24 @@ class HiddenNetwork(EncodedNetworkFramework):
     DIM = 14
     DIGITS = 10
     newinputs = []
+    newhidden = []
     for i in range(DIM*DIM):
       newin = Node()
       newinputs.append(newin)
       self.network.AddNode(newin,self.network.INPUT)
     # 2) Adds the hidden layer
     # needs to finish
-    for i in range(DIM*DIM):
-      newin = Node()
-      newinputs.append(newin)
-      self.network.AddNode(newin,self.network.HIDDEN)
+    for i in range(number_of_hidden_nodes):
+      newhid = Node()
+      for k in range(DIM*DIM):
+        newhid.AddInput(newinputs[k],None,self.network)
+      newhidden.append(newhid)
+      self.network.AddNode(newhid,self.network.HIDDEN)
     # 3) Adds an output node for each possible digit label.
     for j in range(DIGITS):
       newout = Node()
-      for k in range(DIM*DIM):
-        newout.AddInput(newinputs[k],None,self.network)
+      for k in range(number_of_hidden_nodes):
+        newout.AddInput(newhidden[k],None,self.network)
       self.network.AddNode(newout,self.network.OUTPUT)
     pass
     
