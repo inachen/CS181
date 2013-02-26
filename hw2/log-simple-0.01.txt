@@ -1,0 +1,113 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
+{\fonttbl\f0\froman\fcharset0 TimesNewRomanPSMT;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab709
+\pard\pardeftab709
+
+\f0\fs24 \cf0 * * * * * * * * *\
+Parameters => Epochs: 100, Learning Rate: 0.010000\
+Type of network used: SimpleNetwork\
+Input Nodes: 196, Hidden Nodes: 0, Output Nodes: 10\
+* * * * * * * * *\
+1 Performance: 0.69455556 0.668\
+2 Performance: 0.80022222 0.774\
+3 Performance: 0.83466667 0.814\
+4 Performance: 0.84200000 0.824\
+5 Performance: 0.84633333 0.829\
+6 Performance: 0.85055556 0.834\
+7 Performance: 0.85288889 0.839\
+8 Performance: 0.85566667 0.839\
+9 Performance: 0.85788889 0.840\
+10 Performance: 0.85944444 0.843\
+11 Performance: 0.86144444 0.844\
+12 Performance: 0.86322222 0.847\
+13 Performance: 0.86422222 0.847\
+14 Performance: 0.86577778 0.849\
+15 Performance: 0.86733333 0.851\
+16 Performance: 0.86855556 0.852\
+17 Performance: 0.86866667 0.854\
+18 Performance: 0.86966667 0.855\
+19 Performance: 0.87011111 0.857\
+20 Performance: 0.87033333 0.856\
+21 Performance: 0.87144444 0.855\
+22 Performance: 0.87177778 0.855\
+23 Performance: 0.87277778 0.855\
+24 Performance: 0.87377778 0.856\
+25 Performance: 0.87433333 0.856\
+26 Performance: 0.87422222 0.856\
+27 Performance: 0.87488889 0.859\
+28 Performance: 0.87500000 0.859\
+29 Performance: 0.87533333 0.860\
+30 Performance: 0.87600000 0.860\
+31 Performance: 0.87622222 0.859\
+32 Performance: 0.87644444 0.859\
+33 Performance: 0.87633333 0.859\
+34 Performance: 0.87677778 0.859\
+35 Performance: 0.87677778 0.859\
+36 Performance: 0.87722222 0.859\
+37 Performance: 0.87755556 0.861\
+38 Performance: 0.87744444 0.861\
+39 Performance: 0.87800000 0.861\
+40 Performance: 0.87833333 0.862\
+41 Performance: 0.87833333 0.862\
+42 Performance: 0.87833333 0.862\
+43 Performance: 0.87888889 0.862\
+44 Performance: 0.87944444 0.862\
+45 Performance: 0.87944444 0.862\
+46 Performance: 0.88000000 0.862\
+47 Performance: 0.88033333 0.862\
+48 Performance: 0.88022222 0.861\
+49 Performance: 0.88022222 0.862\
+50 Performance: 0.88055556 0.862\
+51 Performance: 0.88100000 0.863\
+52 Performance: 0.88133333 0.862\
+53 Performance: 0.88155556 0.862\
+54 Performance: 0.88144444 0.862\
+55 Performance: 0.88177778 0.862\
+56 Performance: 0.88222222 0.863\
+57 Performance: 0.88233333 0.864\
+58 Performance: 0.88266667 0.864\
+59 Performance: 0.88266667 0.864\
+60 Performance: 0.88300000 0.865\
+61 Performance: 0.88355556 0.865\
+62 Performance: 0.88377778 0.865\
+63 Performance: 0.88388889 0.865\
+64 Performance: 0.88400000 0.865\
+65 Performance: 0.88422222 0.865\
+66 Performance: 0.88422222 0.864\
+67 Performance: 0.88477778 0.864\
+68 Performance: 0.88488889 0.864\
+69 Performance: 0.88522222 0.864\
+70 Performance: 0.88533333 0.864\
+71 Performance: 0.88544444 0.863\
+72 Performance: 0.88600000 0.864\
+73 Performance: 0.88633333 0.864\
+74 Performance: 0.88655556 0.864\
+75 Performance: 0.88633333 0.864\
+76 Performance: 0.88644444 0.864\
+77 Performance: 0.88655556 0.864\
+78 Performance: 0.88677778 0.864\
+79 Performance: 0.88700000 0.864\
+80 Performance: 0.88711111 0.864\
+81 Performance: 0.88722222 0.864\
+82 Performance: 0.88733333 0.864\
+83 Performance: 0.88733333 0.864\
+84 Performance: 0.88755556 0.864\
+85 Performance: 0.88766667 0.864\
+86 Performance: 0.88777778 0.864\
+87 Performance: 0.88788889 0.864\
+88 Performance: 0.88788889 0.864\
+89 Performance: 0.88788889 0.864\
+90 Performance: 0.88788889 0.865\
+91 Performance: 0.88800000 0.865\
+92 Performance: 0.88811111 0.865\
+93 Performance: 0.88811111 0.864\
+94 Performance: 0.88811111 0.864\
+95 Performance: 0.88844444 0.864\
+96 Performance: 0.88877778 0.864\
+97 Performance: 0.88888889 0.864\
+98 Performance: 0.88888889 0.865\
+99 Performance: 0.88922222 0.864\
+100 Performance: 0.88944444 0.864\
+}
