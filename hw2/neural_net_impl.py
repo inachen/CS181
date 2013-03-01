@@ -388,7 +388,6 @@ class HiddenNetwork(EncodedNetworkFramework):
       for k in range(number_of_hidden_nodes):
         newout.AddInput(newhidden[k],None,self.network)
       self.network.AddNode(newout,self.network.OUTPUT)
-    pass
     
 
 #<--- Problem 3, Question 8 ---> 

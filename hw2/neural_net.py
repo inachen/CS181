@@ -229,9 +229,15 @@ class NetworkFramework(object):
       # updates log
       performance_log.append((perf_train, perf_validate))
 
-    # plot the data
+      # stop if the algorithm stops improving
+      if i > 10 and perf_validate < performance_log[i-10][1]:
+        break
+
+    #################
+    # plot the data #
+    #################
     plt.clf()
-    xs = range(1,epochs + 1)
+    xs = range(1,i + 1)
     ys = trainingerror
     ys2 = validationerror
     p1, = plt.plot(xs, ys, color='b')
@@ -239,7 +245,7 @@ class NetworkFramework(object):
     plt.title('Error versus number of epochs')
     plt.xlabel('Number of Epochs')
     plt.ylabel('Error')
-    plt.axis([0, epochs + 4, 0, 0.4])
+    plt.axis([0, i + 4, 0, 0.4])
 
     plt.legend([p1,p2], ['training error','validation error'], 'upper right')
     savefig('errorsimple-0.1.jpg') # save the figure to a file
