@@ -250,7 +250,7 @@ class NetworkFramework(object):
     ys = trainingerror
     ys2 = validationerror
     p1, = plt.plot(xs, ys, color='b')
-    p2, = plt.plot(xs, ys2, color='r')\
+    p2, = plt.plot(xs, ys2, color='r')
     plt.title('Error versus number of epochs - Custom')
     plt.xlabel('Number of Epochs')
     plt.ylabel('Error')
