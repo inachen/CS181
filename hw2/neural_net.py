@@ -1,4 +1,6 @@
 import math
+import matplotlib.pyplot as plt
+from pylab import *
 
 class Weight:
   def __init__(self, value):
@@ -202,6 +204,10 @@ class NetworkFramework(object):
     # Initializes performance log
     performance_log = []
     performance_log.append((self.Performance(images), self.Performance(validation_images)))
+
+    # record the errors so we can graph
+    trainingerror = []
+    validationerror = []
     
     # Loop through the specified number of training epochs.
     for i in range(epochs):
@@ -212,11 +218,33 @@ class NetworkFramework(object):
       # Print out the current training and validation performance.
       perf_train = self.Performance(images)
       perf_validate = self.Performance(validation_images)
-      print '%d Performance: %.8f %.3f' % (
-        i + 1, perf_train, perf_validate)
+      trainingerror.append(1-perf_train)
+      validationerror.append(1-perf_validate)
+
+      # print '%d Performance: %.8f %.3f' % (
+      #   i + 1, perf_train, perf_validate)
+      print '%d Error: %.8f %.3f' % (
+        i + 1, 1- perf_train, 1-perf_validate)
 
       # updates log
       performance_log.append((perf_train, perf_validate))
+
+    # plot the data
+    plt.clf()
+    xs = range(1,epochs + 1)
+    ys = trainingerror
+    ys2 = validationerror
+    p1, = plt.plot(xs, ys, color='b')
+    p2, = plt.plot(xs, ys2, color='r')
+    plt.title('Error versus number of epochs')
+    plt.xlabel('Number of Epochs')
+    plt.ylabel('Error')
+    plt.axis([0, epochs + 4, 0, 0.4])
+
+    plt.legend([p1,p2], ['training error','validation error'], 'upper right')
+    savefig('errorsimple-0.1.jpg') # save the figure to a file
+    plt.show() # show the figure
+
     return(performance_log)
 
   def RegisterFeedForwardFunction(self, fn):

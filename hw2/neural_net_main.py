@@ -49,12 +49,18 @@ def main():
     assert len(image.pixels) == 14
     assert len(image.pixels[0]) == 14
 
+  # Load the validation set.
+  test = DataReader.GetImages('test-1k.txt', -1)
+  for image in test:
+    assert len(image.pixels) == 14
+    assert len(image.pixels[0]) == 14
+
   # Initializing network
 
   if networkType == 'simple':
     network = SimpleNetwork()
   if networkType == 'hidden':
-    network = HiddenNetwork()
+    network = HiddenNetwork(number_of_hidden_nodes=30)
   if networkType == 'custom':
     network = CustomNetwork()
 
@@ -76,6 +82,8 @@ def main():
   print '* * * * * * * * *'
   # Train the network.
   network.Train(images, validation, rate, epochs)
+  # Print performance on the test set
+  print network.performance(test)
 
 if __name__ == "__main__":
   main()
