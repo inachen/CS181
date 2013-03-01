@@ -393,19 +393,90 @@ class HiddenNetwork(EncodedNetworkFramework):
 #<--- Problem 3, Question 8 ---> 
 
 class CustomNetwork(EncodedNetworkFramework):
-  def __init__(self):
+  def __init__(self, number_of_hidden_nodes=10):
     """
     Arguments:
     ---------
-    Your pick.
+    number_of_hidden_nodes : the number of hidden nodes to create (an integer) for each quadrant
 
     Returns:
     --------
-    Your pick
+    Nothing
 
     Description:
     -----------
-    Surprise me!
+    Has a hidden layer that is not fully connected. The image is split into 4 quadrants, which are 
+    trained on separately before combined
+    0   1   2   3   4   5   6  | 7   8   9   10  11  12  13
+    14  15  16  17  18  19  20 | 21  22  23  24  25  26  27
+    28  29  30  31  32  33  34 | 35  36  37  38  39  40  41
+    42  43  44  45  46  47  48 | 49  50  51  52  53  54  55
+    56  57  58  59  60  61  62 | 63  64  65  66  67  68  69
+    70  71  72  73  74  75  76 | 77  78  79  80  81  82  83 
+    84  85  86  87  88  89  90 | 91  92  93  94  95  96  97
+    ---------------------------|---------------------------  
+    98  99  100 ...            |
+    ...                        |
+    182 183 184 185 186 187 188| 189 190 191 192 193 194 195
+
+    quadrant 1: i < 98, i%14 < 7
+    quadrant 2: i < 98, i%14 > 6
+    quadrant 3: i > 97, i%14 < 7
+    quadrant 4: i > 97, i%14 > 6
+
+
     """
     super(CustomNetwork, self).__init__() # <Don't remove this line>
-    pass
+    
+    # 1) Adds an input node for each pixel
+    # from above
+    DIM = 14
+    DIGITS = 10
+    q1inputs = []
+    q2inputs = []
+    q3inputs = []
+    q4inputs = []
+    q1hidden = []
+    q2hidden = []
+    q3hidden = []
+    q4hidden = []
+    for i in range(DIM*DIM):
+      newin = Node()
+      if i < 98 and i%14 < 7:
+        q1inputs.append(newin)
+      elif i < 98 and i%14 > 6:
+        q2inputs.append(newin)
+      elif i > 97 and i%14 < 7:
+        q3inputs.append(newin)
+      else:
+        q4inputs.append(newin)
+      self.network.AddNode(newin,self.network.INPUT)
+
+    # 2) Adds the hidden layer
+    for i in range(number_of_hidden_nodes):
+      newq1 = Node()
+      newq2 = Node()
+      newq3 = Node()
+      newq4 = Node()
+      for k in range(DIM*DIM/4):
+        newq1.AddInput(q1inputs[k],None,self.network)
+        newq2.AddInput(q2inputs[k],None,self.network)
+        newq3.AddInput(q3inputs[k],None,self.network)
+        newq4.AddInput(q4inputs[k],None,self.network)
+      q1hidden.append(newq1)
+      q2hidden.append(newq2)
+      q3hidden.append(newq3)
+      q4hidden.append(newq4)
+      self.network.AddNode(newq1,self.network.HIDDEN)
+      self.network.AddNode(newq2,self.network.HIDDEN)
+      self.network.AddNode(newq3,self.network.HIDDEN)
+      self.network.AddNode(newq4,self.network.HIDDEN)
+    # 3) Adds an output node for each possible digit label.
+    for j in range(DIGITS):
+      newout = Node()
+      for k in range(number_of_hidden_nodes):
+        newout.AddInput(q1hidden[k],None,self.network)
+        newout.AddInput(q2hidden[k],None,self.network)
+        newout.AddInput(q3hidden[k],None,self.network)
+        newout.AddInput(q4hidden[k],None,self.network)
+      self.network.AddNode(newout,self.network.OUTPUT)

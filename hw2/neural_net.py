@@ -247,13 +247,13 @@ class NetworkFramework(object):
     ys2 = validationerror
     p1, = plt.plot(xs, ys, color='b')
     p2, = plt.plot(xs, ys2, color='r')
-    plt.title('Error versus number of epochs')
+    plt.title('Error versus number of epochs - Custom')
     plt.xlabel('Number of Epochs')
     plt.ylabel('Error')
     plt.axis([0, epoch_num + 4, 0, 0.4])
 
     plt.legend([p1,p2], ['training error','validation error'], 'upper right')
-    savefig('errorsimple-0.1.jpg') # save the figure to a file
+    savefig('errorcustom-0.1.jpg') # save the figure to a file
     plt.show() # show the figure
 
     return(performance_log)
