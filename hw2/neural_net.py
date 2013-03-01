@@ -208,6 +208,9 @@ class NetworkFramework(object):
     # record the errors so we can graph
     trainingerror = []
     validationerror = []
+
+    # store the final number of epochs
+    epoch_num = epochs
     
     # Loop through the specified number of training epochs.
     for i in range(epochs):
@@ -231,13 +234,15 @@ class NetworkFramework(object):
 
       # stop if the algorithm stops improving
       if i > 10 and perf_validate < performance_log[i-10][1]:
+        epoch_num = i + 1
         break
 
     #################
     # plot the data #
     #################
+    print epoch_num
     plt.clf()
-    xs = range(1,i + 1)
+    xs = range(1,epoch_num + 1)
     ys = trainingerror
     ys2 = validationerror
     p1, = plt.plot(xs, ys, color='b')
@@ -245,7 +250,7 @@ class NetworkFramework(object):
     plt.title('Error versus number of epochs')
     plt.xlabel('Number of Epochs')
     plt.ylabel('Error')
-    plt.axis([0, i + 4, 0, 0.4])
+    plt.axis([0, epoch_num + 4, 0, 0.4])
 
     plt.legend([p1,p2], ['training error','validation error'], 'upper right')
     savefig('errorsimple-0.1.jpg') # save the figure to a file

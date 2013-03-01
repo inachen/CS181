@@ -83,7 +83,7 @@ def main():
   # Train the network.
   network.Train(images, validation, rate, epochs)
   # Print performance on the test set
-  print network.performance(test)
+  print network.Performance(test)
 
 if __name__ == "__main__":
   main()
