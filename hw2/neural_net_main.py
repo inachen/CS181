@@ -60,7 +60,7 @@ def main():
   if networkType == 'simple':
     network = SimpleNetwork()
   if networkType == 'hidden':
-    network = HiddenNetwork(number_of_hidden_nodes=30)
+    network = HiddenNetwork(number_of_hidden_nodes=15)
   if networkType == 'custom':
     network = CustomNetwork()
 
