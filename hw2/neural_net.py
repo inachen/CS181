@@ -212,6 +212,9 @@ class NetworkFramework(object):
     # store the final number of epochs
     epoch_num = epochs
     
+    # store number of epochs
+    epoch_num = epochs
+
     # Loop through the specified number of training epochs.
     for i in range(epochs):
 
@@ -240,13 +243,14 @@ class NetworkFramework(object):
     #################
     # plot the data #
     #################
-    print epoch_num
+    #print epoch_num
+
     plt.clf()
     xs = range(1,epoch_num + 1)
     ys = trainingerror
     ys2 = validationerror
     p1, = plt.plot(xs, ys, color='b')
-    p2, = plt.plot(xs, ys2, color='r')
+    p2, = plt.plot(xs, ys2, color='r')\
     plt.title('Error versus number of epochs - Custom')
     plt.xlabel('Number of Epochs')
     plt.ylabel('Error')
