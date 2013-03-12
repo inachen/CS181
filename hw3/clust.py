@@ -3,8 +3,11 @@
 # YOUR NAME HERE
 
 import sys
+import matplotlib.pyplot as plt
+from pylab import *
 import random
 import math
+
 
 DATAFILE = "adults.txt"
 
@@ -67,11 +70,71 @@ def distancesqr(point1, point2):
 def listmult(list, num):
     return [float(x * num) for x in list]
 
+mylist = [1.2,3.4]
+print listmult(mylist,2)
+
 # adds 2 lists element by element
 def listadd(list1, list2):
     assert(len(list1) == len(list2)), "The two lists must be the same length"
     return [float(i+j) for i,j in zip(list1, list2)]
 
+# performs k means clustering on a set of data
+def kmeans(data,numExamples,numClusters):
+
+    # find the dimension of the data
+    dimension = len(data[1])
+
+    # find the initial prototypes
+    prototypes = []
+    index = []
+
+    for i in xrange(numClusters):
+        rand = random.randint(0,numExamples-1)
+        # make sure there are no repeats
+        while rand in index:
+            rand = random.randint(0,numExamples-1)
+        prototypes.append(data[rand])
+        index.append(rand)
+
+    errors = []
+    counter = 0
+    responsibilities = [None]*numExamples
+
+    # repeat until the error stops decreasing
+    while True:
+
+        # assign responsibilities to data
+        for i in xrange(numExamples):
+            distances = map(lambda n: distancesqr(data[i],n), prototypes)
+            responsibilities[i] = makeR(numClusters,distances.index(min(distances)))
+
+        # find new error
+        error = 0
+        for j in range(numExamples):
+            for k in range(numClusters):
+                error += responsibilities[j][k]*distancesqr(data[j],prototypes[k])
+
+        # print "Error:",counter,":",errors, error
+
+        # quit if error isn't improving
+        if counter > 10 and error >= errors[counter-9]:
+            return error
+            break
+
+        # else, updates the prototypes
+        errors.append(error)
+        counter += 1
+
+        for l in range(numClusters):
+            topsum = [0]*dimension
+            bottomsum = 0
+            for m in range(numExamples):
+                myrespon = responsibilities[m][l]
+                topsum = listadd(topsum, listmult(data[m],myrespon))
+                bottomsum += responsibilities[m][l]
+            if bottomsum == 0:
+                print "Cluster number",l,"is obsolete"
+            prototypes[l] = listmult(topsum,float(1.0/bottomsum))
 
 
 # main
@@ -110,66 +173,27 @@ def main():
     # WRITE YOUR CODE HERE #
     # ==================== #
 
-    # find the dimension of the data
-    dimension = len(data[1])
-
-    # find the initial prototypes
-    prototypes = []
-    index = []
-
-    for i in xrange(numClusters):
-        rand = random.randint(0,numExamples-1)
-        prototypes.append(data[rand])
-        index.append(rand)
-    print "index", index
-
-    print len(prototypes)
-
     errors = []
-    counter = 0
-    responsibilities = [None]*numExamples
+    for i in range(2,11):
+        errors.append(kmeans(data,numExamples,i))
 
-    # repeat until the error stops decreasing
-    while True:
+    #===============#
+    # plot the data #
+    #===============#
 
-        # assign responsibilities to data
-        for i in xrange(numExamples):
-            distances = map(lambda n: distancesqr(data[i],n), prototypes)
-            responsibilities[i] = makeR(numClusters,distances.index(min(distances)))
-        print responsibilities
+    print errors
 
-        print "RESPONSIBILITIES DONE\n"
+    plt.clf()
+    xs = range(2,11)
+    ys = errors
+    p1, = plt.plot(xs, ys, color='b')
+    plt.title('Error versus number of clusters')
+    plt.xlabel('Number of Clusters')
+    plt.ylabel('Error')
+    plt.axis([0, 12, 1000, 1600])
 
-        # find new error
-        error = 0
-        for j in range(numExamples):
-            for k in range(numClusters):
-                error += responsibilities[j][k]*distancesqr(data[j],prototypes[k])
-
-        print "Error:",counter,":",error
-
-        # quit if error isn't improving
-        if counter > 10 and error >= errors[counter-9]:
-            break
-
-        # else, updates the prototypes
-        errors.append(error)
-        counter += 1
-
-        print "STARTING UPDATING"
-        for l in range(numClusters):
-            topsum = [0]*dimension
-            bottomsum = 0
-            for m in range(numExamples):
-                myrespon = responsibilities[m][l]
-                topsum = listadd(topsum, listmult(data[m],myrespon)) 
-                bottomsum += responsibilities[m][l]
-                if bottomsum == 0:
-                    print "Cluster number",l,"is obsolete"
-            prototypes[l] = listmult(topsum,float(1/bottomsum))
-            print "proto", prototypes
-
-        # print "new prototypes", prototypes
+    savefig('errorkmeans.jpg') # save the figure to a file
+    plt.show() # show the figure
 
 
 if __name__ == "__main__":
