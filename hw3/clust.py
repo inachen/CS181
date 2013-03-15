@@ -229,31 +229,37 @@ def hac(data, numExamples, numClusters, dfunc):
 
     index = []
 
-    for i in range(numExamples):
-        rand = random.randint(0,numExamples-1)
-        # make sure there are no repeats
-        while rand in index:
-            rand = random.randint(0,numExamples-1)
-        index.append(rand)
+    datasample = random.sample(data, numExamples)
 
     clusterset = []
-    for i in index:
-        clusterset.append([data[i]])
+    for d in datasample:
+        clusterset.append([d])
+    # print "cluster start"
+    # print clusterset
 
     # find data with smallest distance
     while len(clusterset) > numClusters:
         # stores indices of smallest distance
         curr_i = 0
-        curr_j = 0
-        for i in range(data):
-            for j in range(data):
+        curr_j = 1
+        for i in range(len(clusterset)):
+            for j in range(len(clusterset)):
                 if i !=j:
-                    if dfunc(data[i], data[j]) < dfunc(data[curr_i], data[curr_j]):
+                    # print "i=", i
+                    # print "j=", j
+                    if dfunc(clusterset[i], clusterset[j], squareDistance) < dfunc(clusterset[curr_i], clusterset[curr_j], squareDistance):
                         curr_i = i
                         curr_j = j
+        clust1 = clusterset[curr_i]
+        clust2 = clusterset[curr_j]
         clusterset.append(clusterset[curr_i] + clusterset[curr_j])
-        clusterset.pop(clusterset[curr_i])
-        clusterset.pop(clusterset[curr_j])
+        # print "cluster added"
+        # print clusterset
+        # print "pops"
+        print clusterset.remove(clust1)
+        print clusterset.remove(clust2)
+        # print "cluster popped"
+        # print clusterset
 
     return clusterset
 
@@ -305,9 +311,9 @@ def main():
     # HAC
     clusterset = []
     if algo == 1:
-        clusterset = hac(data, numExamples, numClusters, cmin)
+        clusterset = hac(data, numExamples, numClusters, ccent)
+        print "Cluster lengths"
         for l in clusterset:
-            print "Cluster lengths"
             print len(l)
 
     # Autoclass
@@ -338,16 +344,25 @@ def main():
     if algo == 1:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        colorlist = ['r', 'g', 'b', 'k']
+        colorlist = ['r', 'g', 'b', 'y']
         for c in range(len(clusterset)):
-            xs = []
-            ys = []
-            zs = []
+            # xs = []
+            # ys = []
+            # zs = []
             for l in clusterset[c]:
-                xs.append(l[0])
-                ys.append(l[1])
-                zs.append(l[2])
-            ax.scatter(xs, ys, zs, c=colorlist[c])
+                # print "l is"
+                # print l
+                x = l[0]
+                y = l[1]
+                z = l[2]
+                # xs.append(l[0])
+                # ys.append(l[1])
+                # zs.append(l[2])
+                ax.scatter(x, y, z, c=colorlist[c])
+        plt.title("HAC on 200 examples, Clusters = 4, Metric = centroid")
+        ax.set_xlabel('Age')
+        ax.set_ylabel('Education')
+        ax.set_zlabel('Income')
 
 
         # fig = plt.figure()
