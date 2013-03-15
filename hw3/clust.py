@@ -15,7 +15,7 @@ import math
 from utils import *
 
 
-DATAFILE = "adults-small.txt"
+DATAFILE = "adults.txt"
 
 #validateInput()
 
@@ -64,13 +64,11 @@ def makeR(length, position):
             response.append(0)
     return response
 
-# finds the distance between 2 points
-# def utils.squareDistance(point1, point2):
-#     assert(len(point1) == len(point2)), "The two points must be in the same dimension"
-#     sums = 0
-#     for i in range(len(point1)):
-#         sums += math.pow(float(point1[i] - point2[i]),2)
-#     return sums
+# Given responsibilites, find index of the 1
+def findIndex(respon):
+    for i in range(len(respon)):
+        if respon[i] == 1:
+            return i
 
 # multiplies a list all the way through by a number
 def listmult(list, num):
@@ -158,6 +156,10 @@ def autoclass(data,numExamples,numClusters):
     log_likely = []
 
     # record mean cluster values
+    meanClusterValues = [[0]*numAttrs]*numClusters
+
+    # initialize responsibilities
+    responsibilities = [None]*numExamples
 
     # process data so that all data attributes have values 0 or 1
     cutoffs = reduce(listadd,data[0:numExamples],None)
@@ -182,6 +184,8 @@ def autoclass(data,numExamples,numClusters):
             thetarow.append(random.random())
         thetas.append(thetarow)
 
+    print "thetas", thetas
+
     for count in range(5):
         # Expectation step
 
@@ -197,7 +201,11 @@ def autoclass(data,numExamples,numClusters):
                 dproduct = 1.0
                 for k in range(numAttrs):
                     dproduct *= pow(thetas[j][k+1],mydata[i][k])*pow((1-thetas[j][k+1]),(1-mydata[i][k]))
-                pvalues.append(thetas[j][0]*dproduct)
+                pvalue = thetas[j][0]*dproduct
+                pvalues.append(pvalue)
+                largestpIndex = pvalues.index(max(pvalues))
+            # largest p corresponds to most likely being in that cluster
+            responsibilities[i] = makeR(numClusters,largestpIndex)
             total = sum(pvalues)
             gammas = map(lambda n: n/float(total), pvalues)
             
@@ -219,7 +227,34 @@ def autoclass(data,numExamples,numClusters):
             for j in range(numAttrs):
                 thetas[i][j+1] = float(E_D1[j][i])/E_N[i]
 
-        # Calculate log 
+
+        # Calculate log likelihoods
+        sums = [0]*numClusters
+        for i in range(numExamples):
+            clust = findIndex(responsibilities[i])
+            insidesums = 0
+            for j in range(numAttrs):
+                # do underflow trick on data
+                #maximum = max(thetas[])
+                print "thetas", thetas[clust][j+1]
+                insidesums += (mydata[i][j]*(log(thetas[clust][j+1]*100)-exp(100))) + ((1-mydata[i][j])*log(1-thetas[clust][j+1]))
+            sums[clust] += log(thetas[clust][0]) + insidesums
+
+        log_likely.append(sum(sums))
+        print "log:",log_likely
+
+    # determine the mean cluster values
+    for i in range(numClusters):
+        mean = [0]*numAttrs
+        counter = 0
+        for j in range(numExamples):
+            if responsibilities[j][i] == 1:
+                mean = [a + b for a,b in zip(mean,mydata[j])]
+                counter += 1
+        meanClusterValues[i] = [a/float(counter) for a in mean]
+
+    for i in range(numClusters):
+        print "CLUSTER",i+1,"MEANS:",meanClusterValues[i]
 
 #===========#
 # HAC       #
@@ -318,7 +353,7 @@ def main():
 
     # Autoclass
     if algo == 2:
-        autoclass(data,numExamples,3)
+        autoclass(data,numExamples,numClusters)
 
     #===============#
     # plot the data #
