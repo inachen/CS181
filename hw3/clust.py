@@ -3,6 +3,7 @@
 # YOUR NAME HERE
 
 import sys
+import utils
 import matplotlib.pyplot as plt
 from pylab import *
 import random
@@ -59,22 +60,26 @@ def makeR(length, position):
     return response
 
 # finds the distance between 2 points
-def distancesqr(point1, point2):
-    assert(len(point1) == len(point2)), "The two points must be in the same dimension"
-    sums = 0
-    for i in range(len(point1)):
-        sums += math.pow(float(point1[i] - point2[i]),2)
-    return sums
+# def utils.squareDistance(point1, point2):
+#     assert(len(point1) == len(point2)), "The two points must be in the same dimension"
+#     sums = 0
+#     for i in range(len(point1)):
+#         sums += math.pow(float(point1[i] - point2[i]),2)
+#     return sums
 
 # multiplies a list all the way through by a number
 def listmult(list, num):
-    return [float(x * num) for x in list]
+    return [(float(x * num)) for x in list]
 
 mylist = [1.2,3.4]
 print listmult(mylist,2)
 
 # adds 2 lists element by element
 def listadd(list1, list2):
+    if list1 == None:
+        return list2
+    if list2 == None:
+        return list1
     assert(len(list1) == len(list2)), "The two lists must be the same length"
     return [float(i+j) for i,j in zip(list1, list2)]
 
@@ -105,14 +110,14 @@ def kmeans(data,numExamples,numClusters):
 
         # assign responsibilities to data
         for i in xrange(numExamples):
-            distances = map(lambda n: distancesqr(data[i],n), prototypes)
+            distances = map(lambda n: utils.squareDistance(data[i],n), prototypes)
             responsibilities[i] = makeR(numClusters,distances.index(min(distances)))
 
         # find new error
         error = 0
         for j in range(numExamples):
             for k in range(numClusters):
-                error += responsibilities[j][k]*distancesqr(data[j],prototypes[k])
+                error += responsibilities[j][k]*utils.squareDistance(data[j],prototypes[k])/numExamples
 
         # print "Error:",counter,":",errors, error
 
@@ -135,6 +140,68 @@ def kmeans(data,numExamples,numClusters):
             if bottomsum == 0:
                 print "Cluster number",l,"is obsolete"
             prototypes[l] = listmult(topsum,float(1.0/bottomsum))
+
+#===========#
+# Autoclass #
+#===========#
+
+def autoclass(data,numExamples,numClusters):
+    numAttrs = len(data[1])
+
+    # record all the log liklihoods
+    log_likely = []
+
+    # process data so that all data attributes have values 0 or 1
+    cutoffs = reduce(listadd,data[0:numExamples],None)
+    cutoffs = listmult(cutoffs,float(1.0/numExamples))
+
+    mydata = []
+    for i in range(numExamples):
+        attributes = []
+        for j in range(numAttrs):
+            if data[i][j] > cutoffs[j]:
+                attributes.append(1)
+            else:
+                attributes.append(0)
+        mydata.append(attributes)
+
+    # initialize starting parameters to 1/2 and 1/numAttrs
+    # sigmas is a list (length numClusters) of lists (length numAttrs)
+    sigmas = []
+    sigmarow = [random.random()]*(numAttrs+1)
+    sigmarow[0] = float(1.0/numClusters)
+    for i in range(numClusters):
+        sigmas.append(sigmarow)
+
+    # Expectation step
+
+    # lists of expectations for all the k's
+    E_N = [0]*numClusters
+    E_D1 = [[0]*numClusters]*numAttrs
+
+    # iterate over all the data
+    for i in range(numExamples):
+        pvalues = []
+        # calculate the p values for each cluster
+        for j in range(numClusters):
+            dproduct = 1
+            for k in range(numAttrs):
+                dproduct = dproduct * pow(sigmas[j][k],mydata[i][k])*pow((1-sigmas[j][k]),(1-mydata[i][k]))
+            pvalues.append(sigmas[j][0]*dproduct)
+        total = sum(pvalues)
+        gammas = map(lambda n: float(n/total), pvalues)
+        E_N = [a + b for a,b in zip(E_N,gammas)]
+        for l in range(numAttrs):
+            if data[i][l] == 1:
+                E_D1[l] = [a + b for a,b in zip(E_D1[l],gammas)]
+
+
+    # for each data point, for each k, calculate all p_k
+    #     increment E(Nk)
+    #     for each attribute, if x_nd = 1, increment E(N_d1(k))
+
+    # Maximation
+    # update the parameters
 
 
 # main
@@ -173,27 +240,29 @@ def main():
     # WRITE YOUR CODE HERE #
     # ==================== #
 
-    errors = []
-    for i in range(2,11):
-        errors.append(kmeans(data,numExamples,i))
+    autoclass(data,numExamples,3)
 
-    #===============#
-    # plot the data #
-    #===============#
+    # errors = []
+    # for i in range(2,11):
+    #     errors.append(kmeans(data,numExamples,i))
 
-    print errors
+    # #===============#
+    # # plot the data #
+    # #===============#
 
-    plt.clf()
-    xs = range(2,11)
-    ys = errors
-    p1, = plt.plot(xs, ys, color='b')
-    plt.title('Error versus number of clusters')
-    plt.xlabel('Number of Clusters')
-    plt.ylabel('Error')
-    plt.axis([0, 12, 1000, 1600])
+    # print errors
 
-    savefig('errorkmeans.jpg') # save the figure to a file
-    plt.show() # show the figure
+    # plt.clf()
+    # xs = range(2,11)
+    # ys = errors
+    # p1, = plt.plot(xs, ys, color='b')
+    # plt.title('Error versus number of clusters')
+    # plt.xlabel('Number of Clusters')
+    # plt.ylabel('Error')
+    # plt.axis([0, 12, 1000, 1600])
+
+    # savefig('errorkmeans.jpg') # save the figure to a file
+    # plt.show() # show the figure
 
 
 if __name__ == "__main__":
