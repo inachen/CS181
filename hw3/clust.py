@@ -157,6 +157,8 @@ def autoclass(data,numExamples,numClusters):
     # record all the log liklihoods
     log_likely = []
 
+    # record mean cluster values
+
     # process data so that all data attributes have values 0 or 1
     cutoffs = reduce(listadd,data[0:numExamples],None)
     cutoffs = listmult(cutoffs,float(1.0/numExamples))
@@ -165,49 +167,59 @@ def autoclass(data,numExamples,numClusters):
     for i in range(numExamples):
         attributes = []
         for j in range(numAttrs):
-            if data[i][j] > cutoffs[j]:
+            if data[i][j] >= cutoffs[j]:
                 attributes.append(1)
             else:
                 attributes.append(0)
         mydata.append(attributes)
 
     # initialize starting parameters to 1/2 and 1/numAttrs
-    # sigmas is a list (length numClusters) of lists (length numAttrs)
-    sigmas = []
-    sigmarow = [random.random()]*(numAttrs+1)
-    sigmarow[0] = float(1.0/numClusters)
+    # thetas is a list (length numClusters) of lists (length numAttrs)
+    thetas = []
     for i in range(numClusters):
-        sigmas.append(sigmarow)
+        thetarow = [float(1.0/numClusters)]
+        for j in range(numAttrs):
+            thetarow.append(random.random())
+        thetas.append(thetarow)
 
-    # Expectation step
+    for count in range(5):
+        # Expectation step
 
-    # lists of expectations for all the k's
-    E_N = [0]*numClusters
-    E_D1 = [[0]*numClusters]*numAttrs
+        # lists of expectations for all the k's
+        E_N = [0]*numClusters
+        E_D1 = [[0]*numClusters]*numAttrs
 
-    # iterate over all the data
-    for i in range(numExamples):
-        pvalues = []
-        # calculate the p values for each cluster
-        for j in range(numClusters):
-            dproduct = 1
-            for k in range(numAttrs):
-                dproduct = dproduct * pow(sigmas[j][k],mydata[i][k])*pow((1-sigmas[j][k]),(1-mydata[i][k]))
-            pvalues.append(sigmas[j][0]*dproduct)
-        total = sum(pvalues)
-        gammas = map(lambda n: float(n/total), pvalues)
-        E_N = [a + b for a,b in zip(E_N,gammas)]
-        for l in range(numAttrs):
-            if data[i][l] == 1:
-                E_D1[l] = [a + b for a,b in zip(E_D1[l],gammas)]
+        # iterate over all the data
+        for i in range(numExamples):
+            pvalues = []
+            # calculate the p values for each cluster
+            for j in range(numClusters):
+                dproduct = 1.0
+                for k in range(numAttrs):
+                    dproduct *= pow(thetas[j][k+1],mydata[i][k])*pow((1-thetas[j][k+1]),(1-mydata[i][k]))
+                pvalues.append(thetas[j][0]*dproduct)
+            total = sum(pvalues)
+            gammas = map(lambda n: n/float(total), pvalues)
+            
+            # increment E_N
+            E_N = [a + b for a,b in zip(E_N,gammas)]
 
+            # for each attribute, if x_nd = 1, increment E(N_d1(k))
+            for l in range(numAttrs):
+                if mydata[i][l] == 1:
+                    E_D1[l] = [a + b for a,b in zip(E_D1[l],gammas)]
 
-    # for each data point, for each k, calculate all p_k
-    #     increment E(Nk)
-    #     for each attribute, if x_nd = 1, increment E(N_d1(k))
+        # for each data point, for each k, calculate all p_k
+        #     increment E(Nk)
 
-    # Maximation
-    # update the parameters
+        # Maximation
+        # update the theta_c's
+        for i in range(numClusters):
+            thetas[i][0] = float(E_N[i])/numExamples
+            for j in range(numAttrs):
+                thetas[i][j+1] = float(E_D1[j][i])/E_N[i]
+
+        # Calculate log 
 
 #===========#
 # HAC       #
