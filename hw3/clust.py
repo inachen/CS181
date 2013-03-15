@@ -392,7 +392,7 @@ def main():
         plt.title('Error versus number of clusters')
         plt.xlabel('Number of Clusters')
         plt.ylabel('Error')
-        plt.axis([0, 12, 0, 3])
+        plt.axis([0, 12, 0.8, 1.8])
 
         savefig('errorkmeans.jpg') # save the figure to a file
         plt.show() # show the figure
