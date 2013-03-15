@@ -367,7 +367,7 @@ def main():
     # HAC
     clusterset = []
     if algo == 1:
-        clusterset = hac(data, numExamples, numClusters, ccent)
+        clusterset = hac(data, numExamples, numClusters, cmin)
         print "Cluster lengths"
         for l in clusterset:
             print len(l)
@@ -416,7 +416,7 @@ def main():
                 # ys.append(l[1])
                 # zs.append(l[2])
                 ax.scatter(x, y, z, c=colorlist[c])
-        plt.title("HAC on 200 examples, Clusters = 4, Metric = centroid")
+        plt.title("HAC on 200 examples, Clusters = 4, Metric = min")
         ax.set_xlabel('Age')
         ax.set_ylabel('Education')
         ax.set_zlabel('Income')
