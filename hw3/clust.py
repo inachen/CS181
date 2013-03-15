@@ -74,8 +74,6 @@ def findIndex(respon):
 def listmult(list, num):
     return [(float(x * num)) for x in list]
 
-mylist = [1.2,3.4]
-print listmult(mylist,2)
 
 # adds 2 lists element by element
 def listadd(list1, list2):
@@ -161,6 +159,11 @@ def autoclass(data,numExamples,numClusters):
     # initialize responsibilities
     responsibilities = [None]*numExamples
 
+    # set all time high log likelihood
+    high = -sys.maxint
+
+    threshold = 0.000001
+
     # process data so that all data attributes have values 0 or 1
     cutoffs = reduce(listadd,data[0:numExamples],None)
     cutoffs = listmult(cutoffs,float(1.0/numExamples))
@@ -175,7 +178,7 @@ def autoclass(data,numExamples,numClusters):
                 attributes.append(0)
         mydata.append(attributes)
 
-    # initialize starting parameters to 1/2 and 1/numAttrs
+    # initialize starting parameters to 1/numClusters and random values in [0,1]
     # thetas is a list (length numClusters) of lists (length numAttrs)
     thetas = []
     for i in range(numClusters):
@@ -184,9 +187,8 @@ def autoclass(data,numExamples,numClusters):
             thetarow.append(random.random())
         thetas.append(thetarow)
 
-    print "thetas", thetas
-
-    for count in range(5):
+    counter = 0
+    while True:
         # Expectation step
 
         # lists of expectations for all the k's
@@ -227,6 +229,8 @@ def autoclass(data,numExamples,numClusters):
             for j in range(numAttrs):
                 thetas[i][j+1] = float(E_D1[j][i])/E_N[i]
 
+        counter += 1
+
 
         # Calculate log likelihoods
         sums = [0]*numClusters
@@ -234,14 +238,18 @@ def autoclass(data,numExamples,numClusters):
             clust = findIndex(responsibilities[i])
             insidesums = 0
             for j in range(numAttrs):
-                # do underflow trick on data
-                #maximum = max(thetas[])
-                print "thetas", thetas[clust][j+1]
-                insidesums += (mydata[i][j]*(log(thetas[clust][j+1]*100)-exp(100))) + ((1-mydata[i][j])*log(1-thetas[clust][j+1]))
+                if thetas[clust][j+1] > 0 and thetas[clust][j+1] < 1:
+                    insidesums += (mydata[i][j]*(log(thetas[clust][j+1]))) + ((1-mydata[i][j])*log(1-thetas[clust][j+1]))
             sums[clust] += log(thetas[clust][0]) + insidesums
+        likely = sum(sums)
 
-        log_likely.append(sum(sums))
-        print "log:",log_likely
+        log_likely.append(likely)
+        print "log:",counter, ",",likely
+
+        if likely > high + threshold:
+            high = likely
+        else:
+            break
 
     # determine the mean cluster values
     for i in range(numClusters):
@@ -255,6 +263,19 @@ def autoclass(data,numExamples,numClusters):
 
     for i in range(numClusters):
         print "CLUSTER",i+1,"MEANS:",meanClusterValues[i]
+
+    # plot the data
+    plt.clf()
+    xs = range(1,len(log_likely)+1)
+    ys = log_likely
+    p1, = plt.plot(xs, ys, color='b')
+    plt.title('Log likelihood versus number of iterations (K=%s)' % numClusters)
+    plt.xlabel('Number of Iterations')
+    plt.ylabel('Los likelihood')
+    plt.axis([0, len(log_likely)+5, -10000, -15000])
+
+    savefig('log_likely%s.jpg' % numClusters) # save the figure to a file
+    # plt.show() # show the figure
 
 #===========#
 # HAC       #
@@ -353,7 +374,8 @@ def main():
 
     # Autoclass
     if algo == 2:
-        autoclass(data,numExamples,numClusters)
+        for i in range(9):
+            autoclass(data,numExamples,i+2)
 
     #===============#
     # plot the data #
@@ -370,7 +392,7 @@ def main():
         plt.title('Error versus number of clusters')
         plt.xlabel('Number of Clusters')
         plt.ylabel('Error')
-        plt.axis([0, 12, 1000, 1600])
+        plt.axis([0, 12, 0, 3])
 
         savefig('errorkmeans.jpg') # save the figure to a file
         plt.show() # show the figure
