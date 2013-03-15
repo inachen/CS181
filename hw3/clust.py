@@ -5,17 +5,22 @@
 import sys
 import utils
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+import matplotlib.pyplot as plt
 from pylab import *
 import random
 import math
+from utils import *
 
 
-DATAFILE = "adults.txt"
+DATAFILE = "adults-small.txt"
 
 #validateInput()
 
 def validateInput():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         return False
     if sys.argv[1] <= 0:
         return False
@@ -141,6 +146,7 @@ def kmeans(data,numExamples,numClusters):
                 print "Cluster number",l,"is obsolete"
             prototypes[l] = listmult(topsum,float(1.0/bottomsum))
 
+
 #===========#
 # Autoclass #
 #===========#
@@ -203,6 +209,41 @@ def autoclass(data,numExamples,numClusters):
     # Maximation
     # update the parameters
 
+#===========#
+# HAC       #
+#===========#
+# performs HAC on set of data
+def hac(data, numExamples, numClusters, dfunc):
+
+    index = []
+
+    for i in range(numExamples):
+        rand = random.randint(0,numExamples-1)
+        # make sure there are no repeats
+        while rand in index:
+            rand = random.randint(0,numExamples-1)
+        index.append(rand)
+
+    clusterset = []
+    for i in index:
+        clusterset.append([data[i]])
+
+    # find data with smallest distance
+    while len(clusterset) > numClusters:
+        # stores indices of smallest distance
+        curr_i = 0
+        curr_j = 0
+        for i in range(data):
+            for j in range(data):
+                if i !=j:
+                    if dfunc(data[i], data[j]) < dfunc(data[curr_i], data[curr_j]):
+                        curr_i = i
+                        curr_j = j
+        clusterset.append(clusterset[curr_i] + clusterset[curr_j])
+        clusterset.pop(clusterset[curr_i])
+        clusterset.pop(clusterset[curr_j])
+
+    return clusterset
 
 # main
 # ----
@@ -212,11 +253,14 @@ def autoclass(data,numExamples,numClusters):
 def main():
     # Validate the inputs
     if(validateInput() == False):
-        print "Usage: clust numClusters numExamples"
+        print "Usage: clust numClusters numExamples algo"
         sys.exit(1);
 
     numClusters = int(sys.argv[1])
     numExamples = int(sys.argv[2])
+    # 0 for kmeans, 1 for HAC
+    algo = int(sys.argv[3])
+
 
     #Initialize the random seed
     
@@ -240,30 +284,67 @@ def main():
     # WRITE YOUR CODE HERE #
     # ==================== #
 
-    autoclass(data,numExamples,3)
+    # KMEANS
+    errors = []
+    if algo == 0:
+        for i in range(2,11):
+            errors.append(kmeans(data,numExamples,i))
 
-    # errors = []
-    # for i in range(2,11):
-    #     errors.append(kmeans(data,numExamples,i))
+    # HAC
+    clusterset = []
+    if algo == 1:
+        clusterset = hac(data, numExamples, numClusters, cmin)
+        for l in clusterset:
+            print "Cluster lengths"
+            print len(l)
 
-    # #===============#
-    # # plot the data #
-    # #===============#
+    # Autoclass
+    if algo == 2:
+        autoclass(data,numExamples,3)
 
+    #===============#
+    # plot the data #
+    #===============#
+
+    # KMEANS
     # print errors
 
-    # plt.clf()
-    # xs = range(2,11)
-    # ys = errors
-    # p1, = plt.plot(xs, ys, color='b')
-    # plt.title('Error versus number of clusters')
-    # plt.xlabel('Number of Clusters')
-    # plt.ylabel('Error')
-    # plt.axis([0, 12, 1000, 1600])
+    if algo == 0:
+        plt.clf()
+        xs = range(2,11)
+        ys = errors
+        p1, = plt.plot(xs, ys, color='b')
+        plt.title('Error versus number of clusters')
+        plt.xlabel('Number of Clusters')
+        plt.ylabel('Error')
+        plt.axis([0, 12, 1000, 1600])
 
-    # savefig('errorkmeans.jpg') # save the figure to a file
-    # plt.show() # show the figure
+        savefig('errorkmeans.jpg') # save the figure to a file
+        plt.show() # show the figure
 
+    # HAC
+    if algo == 1:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        colorlist = ['r', 'g', 'b', 'k']
+        for c in range(len(clusterset)):
+            xs = []
+            ys = []
+            zs = []
+            for l in clusterset[c]:
+                xs.append(l[0])
+                ys.append(l[1])
+                zs.append(l[2])
+            ax.scatter(xs, ys, zs, c=colorlist[c])
+
+
+        # fig = plt.figure()
+        # ax = fig.gca(projection='3d')
+        # ax.plot(xs, ys, zs, c=color, label='hac-cmin-100')
+        # ax.legend()
+
+        savefig('hac-cmin-100.jpg') # save the figure to a file
+        plt.show() # show the figure
 
 if __name__ == "__main__":
     validateInput()
