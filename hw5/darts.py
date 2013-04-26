@@ -17,8 +17,7 @@ EPOCH_SIZE = 10
 # <CODE HERE>: Complete this function, which should return a
 # list of all possible states.
 def get_states():
-  # should return a **list** of states. Each state should be an integer.
-  return []
+  return range(0,throw.START_SCORE+1)
 
 # Returns a list of all possible actions, or targets, which include both a
 # wedge number and a ring.
@@ -38,9 +37,11 @@ def get_actions():
 
 # <CODE HERE>: Define the reward function
 def R(s,a):
-  # takes a state s and action a
-  # returns the reward for completing action a in state s
-  return 0
+  score = throw.location_to_score(a)
+  if score > s:
+    return 0
+  else:
+    return score
 
 
 # Play a single game 
@@ -93,8 +94,9 @@ def test(n, method):
 
 # <CODE HERE>: Feel free to modify the main function to set up your experiments.
 def main():
+    scores = []
     throw.init_board()
-    num_games = 1000
+    num_games = 15
 
 #************************************************#
 # Uncomment the lines below to run the mdp code, #
@@ -102,9 +104,9 @@ def main():
 # the thrower specified in question 2.           #
 #*************************************************
 
-# Default is to solve MDP and play 1 game
-    #throw.use_simple_thrower()
-    #test(1, "mdp")    
+#Default is to solve MDP and play 1 game
+    # throw.use_simple_thrower()
+    # test(1, "mdp")    
 
 #*************************************************#
 # Uncomment the lines below to run the modelbased #
@@ -117,9 +119,11 @@ def main():
 # multiple calls to main().
 # Then, initialize the throwing model and run
 # the modelbased algorithm.
-    #random.seed()
-    #throw.init_thrower()
-    #modelbased.modelbased(GAMMA, EPOCH_SIZE, num_games)
+    for i in range(1,15):
+        print "EPOCH SIZE: ", i
+        random.seed()
+        throw.init_thrower()
+        modelbased.modelbased(GAMMA, i, num_games)
 
 #*************************************************#
 # Uncomment the lines below to run the modelfree  #
