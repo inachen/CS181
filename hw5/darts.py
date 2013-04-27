@@ -96,7 +96,7 @@ def test(n, method):
 def main():
     scores = []
     throw.init_board()
-    num_games = 15
+    num_games = 100
 
 #************************************************#
 # Uncomment the lines below to run the mdp code, #
@@ -119,7 +119,8 @@ def main():
 # multiple calls to main().
 # Then, initialize the throwing model and run
 # the modelbased algorithm.
-    for i in range(1,15):
+    sizes = [1,5,10,15]
+    for i in sizes:
         print "EPOCH SIZE: ", i
         random.seed()
         throw.init_thrower()
