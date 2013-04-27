@@ -22,48 +22,106 @@ def get_target(score):
 
 
 # Exploration/exploitation strategy one.
-def ex_strategy_one():
+EPSILON = 0.5
+def ex_strategy_one(num_iterations):
+  if random.random() <= float(EPSILON/num_iterations):
+    return 1
   return 0
 
 
 # Exploration/exploitation strategy two.
-def ex_strategy_two():
-  return 1
+TIME = 5
+def ex_strategy_two(num_iterations):
+  if num_iterations < TIME:
+    return 1
+  return 0
 
 
 # The Q-learning algorithm:
-def Q_learning(gamma, num_games):
-	# initialize Q's
-	Q = []
-	states = darts.get_states()
-	actions = darts.get_actions()
-	for s in states:
-		for a in range(len(actions)):
-			Q[s][a] = 0
-			# A = {a:0}
-			# Q[s] = A
+# <<<<<<< HEAD
+# def Q_learning(gamma, num_games):
+# 	# initialize Q's
+# 	Q = []
+# 	states = darts.get_states()
+# 	actions = darts.get_actions()
+# 	for s in states:
+# 		for a in range(len(actions)):
+# 			Q[s][a] = 0
+# 			# A = {a:0}
+# 			# Q[s] = A
 
-	# run Q-learning
-	for g in range(1, num_games + 1):
+# 	# run Q-learning
+# 	for g in range(1, num_games + 1):
     
-  	# run a single game
-    s = throw.START_SCORE
-    while s > 0:
-      	# The following two statements implement two exploration-exploitation
-        # strategies. Comment out the strategy that you wish not to use.
+#   	# run a single game
+#     s = throw.START_SCORE
+#     while s > 0:
+#       	# The following two statements implement two exploration-exploitation
+#         # strategies. Comment out the strategy that you wish not to use.
 			
-    	to_explore = ex_strategy_one(num_iterations)
-      #to_explore = ex_strategy_two(num_iterations)
+#     	to_explore = ex_strategy_one(num_iterations)
+#       #to_explore = ex_strategy_two(num_iterations)
 
-      if to_explore:
-       	# explore
-       	a = random.randint(0, len(actions)-1)
-       	action = actions[a]
-      else:
-        # exploit
-        q_values = Q[s]
-       	a = q_values.index(max(q_values))
-       	action = actions[a]
+#       if to_explore:
+#        	# explore
+#        	a = random.randint(0, len(actions)-1)
+#        	action = actions[a]
+#       else:
+#         # exploit
+#         q_values = Q[s]
+#        	a = q_values.index(max(q_values))
+#        	action = actions[a]
+# =======
+def Q_learning(gamma, learning_rate, num_games):
+
+	# store all actions (targets on dartboard) in actions array
+    actions = darts.get_actions()
+    states = darts.get_states()
+
+
+    g = 0
+    num_actions = {}
+    num_transitions = {}
+    T_matrix = {}
+    q_values = {}
+    
+    
+    # Initialize all arrays to 0 except the policy, which should be assigned a random action for each state.
+    for s in states:
+        num_actions[s] = {}
+        num_transitions[s] = {}
+        T_matrix[s] = {}
+        q_values[s] = {}
+        
+        for a in range(len(actions)):
+            num_actions[s][a] = 0
+            q_values[s][a] = 0
+
+        for s_prime in states:
+            num_transitions[s][s_prime] = {}
+            T_matrix[s][s_prime] = {}
+            for a in range(len(actions)):
+                num_transitions[s][s_prime][a] = 0
+                T_matrix[s][s_prime][a] = 0
+
+    for g in range(1, num_games + 1):
+    
+    	# run a single game
+        s = throw.START_SCORE
+        while s > 0:
+
+        	# which strategy to use
+        	to_explore = ex_strategy_one(num_iterations)
+    	    #to_explore = ex_strategy_two(num_iterations)
+    		
+            if to_explore:
+            	# explore
+            	a = random.randint(0, len(actions)-1)
+            	action = actions[a]
+            else:
+            	# exploit
+            	a = pi_star[s]
+            	action = actions[a]
 
   return
 

@@ -119,12 +119,12 @@ def main():
 # multiple calls to main().
 # Then, initialize the throwing model and run
 # the modelbased algorithm.
-    sizes = [1,5,10,15]
-    for i in sizes:
-        print "EPOCH SIZE: ", i
-        random.seed()
-        throw.init_thrower()
-        modelbased.modelbased(GAMMA, i, num_games)
+    # sizes = [1,5,10,15]
+    # for i in sizes:
+    #     print "EPOCH SIZE: ", i
+    #     random.seed()
+    #     throw.init_thrower()
+    #     modelbased.modelbased(GAMMA, i, num_games)
 
 #*************************************************#
 # Uncomment the lines below to run the modelfree  #
@@ -133,9 +133,9 @@ def main():
 
 # Plays 1 game using a default player. No modelfree
 # code is provided. 
-    #random.seed()
-    #throw.init_thrower()
-    #test(1, "modelfree")
+    random.seed()
+    throw.init_thrower()
+    test(1, "modelfree")
 
 
 if __name__ =="__main__":
