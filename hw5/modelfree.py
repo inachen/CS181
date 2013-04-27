@@ -32,5 +32,43 @@ def ex_strategy_two():
 
 
 # The Q-learning algorithm:
-def Q_learning():
+def Q_learning(gamma, num_games):
+	# initialize Q's
+	Q = []
+	states = darts.get_states()
+	actions = darts.get_actions()
+	for s in states:
+		for a in range(len(actions)):
+			Q[s][a] = 0
+			# A = {a:0}
+			# Q[s] = A
+
+	# run Q-learning
+	for g in range(1, num_games + 1):
+    
+  	# run a single game
+    s = throw.START_SCORE
+    while s > 0:
+      	# The following two statements implement two exploration-exploitation
+        # strategies. Comment out the strategy that you wish not to use.
+			
+    	to_explore = ex_strategy_one(num_iterations)
+      #to_explore = ex_strategy_two(num_iterations)
+
+      if to_explore:
+       	# explore
+       	a = random.randint(0, len(actions)-1)
+       	action = actions[a]
+      else:
+        # exploit
+        q_values = Q[s]
+       	a = q_values.index(max(q_values))
+       	action = actions[a]
+
   return
+
+
+
+
+
+
