@@ -10,6 +10,8 @@ import darts
 # implementing the Q learning algorithm or define your own 
 # functions.
 
+ALPHA = 0.01
+
 def start_game():
 
   return(throw.location(throw.INNER_RING, throw.NUM_WEDGES)) 
@@ -21,15 +23,27 @@ def get_target(score):
   return(throw.location(throw.INNER_RING, throw.NUM_WEDGES))
 
 
+<<<<<<< HEAD
 # Exploration/exploitation strategy one.
+=======
+# Define your first exploration/exploitation strategy here. Return 0 to exploit and 1 to explore. 
+# You may want to pass arguments from the modelbased function. 
+# Strategy 1: epsilon greedy
+>>>>>>> stuffs
 EPSILON = 0.5
 def ex_strategy_one(num_iterations):
   if random.random() <= float(EPSILON/num_iterations):
     return 1
   return 0
 
+<<<<<<< HEAD
 
 # Exploration/exploitation strategy two.
+=======
+# Define your first exploration/exploitation strategy here. Return 0 to exploit and 1 to explore. 
+# You may want to pass arguments from the modelbased function.
+# Strategy 2: Explore for a while before exploting
+>>>>>>> stuffs
 TIME = 5
 def ex_strategy_two(num_iterations):
   if num_iterations < TIME:
