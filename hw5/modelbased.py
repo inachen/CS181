@@ -112,7 +112,7 @@ def modelbased(gamma, epoch_size, num_games):
             num_actions[s][a] += 1
             num_transitions[s][s_prime][a] += 1
 
-	    # Next state becomes current state 
+	   # Next state becomes current state 
             s = s_prime
 
             # Update our learned MDP and optimal policy after every EPOCH_SIZE throws, 

@@ -45,14 +45,15 @@ def R(s,a):
 
 
 # Play a single game 
-def play(method):
+def play(method, learning_rate):
     score = throw.START_SCORE
     turns = 0
     
     if method == "mdp":
         target = mdp.start_game(GAMMA)
     else:
-        target = modelfree.start_game()
+        num_games = 100
+        target = modelfree.start_game(GAMMA, learning_rate, num_games)
         
     targets = []
     results = []
@@ -62,15 +63,16 @@ def play(method):
         targets.append(target)
         results.append(result)
         raw_score = throw.location_to_score(result)
-        print "Target: wedge", target.wedge,", ring", target.ring
-        print "Result: wedge", result.wedge,", ring", result.ring
-        print "Raw Score:", raw_score
-        print "Score:", score
+
+        # print "Target: wedge", target.wedge,", ring", target.ring
+        # print "Result: wedge", result.wedge,", ring", result.ring
+        # print "Raw Score:", raw_score
+        # print "Score:", score
         if raw_score <= score:
             score = int(score - raw_score)
-        else:
-            print
-            print "TOO HIGH!"
+        # else:
+            # print
+            # print "TOO HIGH!"
         if score == 0:
             break
 
@@ -79,15 +81,15 @@ def play(method):
         else:
             target = modelfree.get_target(score)
             
-    print "WOOHOO!  It only took", turns, " turns"
+    # print "WOOHOO!  It only took", turns, " turns"
     #end_game(turns)
     return turns
 
 # Play n games and return the average score. 
-def test(n, method):
+def test(n, method, learning_rate):
     score = 0
     for i in range(n):
-        score += play(method)
+        score += play(method, learning_rate)
         
     print "Average turns = ", float(score)/float(n)
     return score
@@ -133,10 +135,13 @@ def main():
 
 # Plays 1 game using a default player. No modelfree
 # code is provided. 
-    random.seed()
-    throw.init_thrower()
-    test(1, "modelfree")
-
+    learning = [0.8, 0.85, 0.9, 0.95, 1]
+    for l in learning:
+        print "LEARNING RATE: ", l
+        random.seed()
+        throw.init_thrower()
+        test(1000, "modelfree", l)
+            
 
 if __name__ =="__main__":
     main()
