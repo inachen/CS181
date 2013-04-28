@@ -107,8 +107,8 @@ def main():
 #*************************************************
 
 #Default is to solve MDP and play 1 game
-    # throw.use_simple_thrower()
-    # test(1, "mdp")    
+    throw.use_simple_thrower()
+    test(1, "mdp")    
 
 #*************************************************#
 # Uncomment the lines below to run the modelbased #
@@ -135,13 +135,18 @@ def main():
 
 # Plays 1 game using a default player. No modelfree
 # code is provided. 
+
     learning = [0.8, 0.85, 0.9, 0.95, 1]
     for l in learning:
         print "LEARNING RATE: ", l
         random.seed()
         throw.init_thrower()
         test(1000, "modelfree", l)
-            
+
+    # random.seed()
+    # throw.init_thrower()
+    # test(1, "modelfree")
+
 
 if __name__ =="__main__":
     main()
