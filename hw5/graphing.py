@@ -5,15 +5,29 @@ import math
 
 plt.clf()
 xs = range(1,15)
-ys = [15.4,16.8666666667,20.6666666667,18.6666666667,16.1333333333,15.6,17.0666666667,16.6,17.1333333333,17.6,16.4666666667,17.9333333333,14.8666666667,19.9333333333]
-ys2 = [13.0666666667,16.7333333333,16.8666666667,19.1333333333,17.3333333333,16.2666666667,15.4666666667,16.5333333333,15.2666666667,16.2666666667,14.6,14.2666666667,15.2,16.8]
+ys2 = [15.4,16.8666666667,20.6666666667,18.6666666667,16.1333333333,15.6,17.0666666667,16.6,17.1333333333,17.6,16.4666666667,17.9333333333,14.8666666667,19.9333333333]
+ys = [13.0666666667,16.7333333333,16.8666666667,19.1333333333,17.3333333333,16.2666666667,15.4666666667,16.5333333333,15.2666666667,16.2666666667,14.6,14.2666666667,15.2,16.8]
 p1, = plt.plot(xs, ys, color='b')
 p2, = plt.plot(xs, ys2, color='r')
-plt.title('Performance vs Number of Epochs')
-plt.xlabel('Number of Epochs')
+plt.title('Performance vs Epoch Size')
+plt.xlabel('Epoch Size')
 plt.ylabel('Average number of throws')
+plt.legend((p1,p2), ('strategy 1','strategy 2'), 'upper right')
 savefig('modelbased.jpg') # save the figure to a file
-plt.show() # show the figure
+# plt.show() # show the figure
+
+plt.clf()
+xs = [1,5,10,15]
+ys = [16.14,16.86,31.65,19.31]
+ys2 = [16.29,14.53,16.94,16.49]
+p1, = plt.plot(xs, ys, color='b')
+p2, = plt.plot(xs, ys2, color='r')
+plt.title('Performance vs Epoch Size')
+plt.xlabel('Epoch Size')
+plt.ylabel('Average number of throws')
+plt.legend((p1,p2), ('strategy 1','strategy 2'), 'upper right')
+savefig('modelbased100.jpg') # save the figure to a file
+# plt.show() # show the figure
 
 #stupid way
 
