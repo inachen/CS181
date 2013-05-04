@@ -1,0 +1,71 @@
+strategy one, 1000 games for learning, 100 games to test
+
+LEARNING RATE:  0.8
+Thrower Bias: 0.221761455896 -0.888914717558
+Thrower wobble: 0.777560835233 0.649357701096
+Average turns =  31.69
+LEARNING RATE:  0.85
+Thrower Bias: 0.00873425674623 0.235402469223
+Thrower wobble: 0.788485271496 0.71959100895
+Average turns =  21.1
+LEARNING RATE:  0.9
+Thrower Bias: 0.0145795755956 0.196375483985
+Thrower wobble: 0.547055516595 0.672906932931
+Average turns =  19.25
+LEARNING RATE:  0.95
+Thrower Bias: 0.195242655685 0.0548985632155
+Thrower wobble: 0.649472045189 0.628539555771
+Average turns =  18.9
+LEARNING RATE:  1
+Thrower Bias: 0.109954308467 0.70272484406
+Thrower wobble: 0.623573787036 0.758560275001
+Average turns =  21.41
+
+strategy one, 100 games for learning, 100 games to test
+
+LEARNING RATE:  0.8
+Thrower Bias: 0.357625435951 -0.139022884675
+Thrower wobble: 0.648789805471 0.728256432662
+Average turns =  27.1
+LEARNING RATE:  0.85
+Thrower Bias: -0.27137103429 -0.168838227708
+Thrower wobble: 0.57975735196 0.707725454068
+Average turns =  20.14
+LEARNING RATE:  0.9
+Thrower Bias: 0.393948613702 -0.215183720742
+Thrower wobble: 0.618341562608 0.772352490715
+Average turns =  21.33
+LEARNING RATE:  0.95
+Thrower Bias: -0.000745450969152 0.217772175615
+Thrower wobble: 0.555578228525 0.607489654568
+Average turns =  17.75
+LEARNING RATE:  1
+Thrower Bias: 0.223819303973 -0.203290339098
+Thrower wobble: 0.609897716845 0.614233578106
+Average turns =  18.44
+
+strategy two, 100 games for learning, 100 games to test
+
+LEARNING RATE:  0.8
+Thrower Bias: -0.256871269239 0.126897770848
+Thrower wobble: 0.695466226696 0.564614384434
+Average turns =  23.99
+LEARNING RATE:  0.85
+Thrower Bias: -0.493797272968 0.0207317921168
+Thrower wobble: 0.725864061696 0.73607919446
+Average turns =  24.57
+LEARNING RATE:  0.9
+Thrower Bias: -0.119785810292 0.16468234968
+Thrower wobble: 0.628010822406 0.676958914334
+Average turns =  24.15
+LEARNING RATE:  0.95
+Thrower Bias: -0.758048205055 -0.154926129501
+Thrower wobble: 0.692843941485 0.586704813426
+Average turns =  24.6
+LEARNING RATE:  1
+Thrower Bias: -0.380360157213 -0.280466349624
+Thrower wobble: 0.687582265415 0.575047336652
+Average turns =  23.0
+
+strategy two, 1000 games for learning, 100 games to test
+

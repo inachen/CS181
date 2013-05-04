@@ -147,6 +147,10 @@ def main():
     # throw.init_thrower()
     # test(1, "modelfree")
 
+# =======
+#         test(100, "modelfree", l)
+            
+# >>>>>>> pulling
 
 if __name__ =="__main__":
     main()

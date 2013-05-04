@@ -123,8 +123,8 @@ def Q_learning(gamma, learning_rate, num_games):
             num_iterations += 1
 
         	# which strategy to use
-            to_explore = ex_strategy_one(num_iterations)
-            #to_explore = ex_strategy_two(num_iterations)
+            #to_explore = ex_strategy_one(num_iterations)
+            to_explore = ex_strategy_two(num_iterations)
 
             if to_explore:
             	# explore
